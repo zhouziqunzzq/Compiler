@@ -8,39 +8,47 @@ using namespace std;
 template<class T>
 class Table
 {
-	private:
-		vector<T> table;
-		map<T, int> index;
-	
-	public:
-		int fill(T v);
-		bool get(int id, T &v);
+protected:
+    vector<T> table;
+    map<T, int> index;
+
+public:
+    int entry(T v);
+    T getValue(int id);
+    int getID(T v);
+    bool has(T v);
 };
 
 template<class T>
-int Table<T>::fill(T v)
+int Table<T>::entry(T v)
 {
-	auto it = index.find(v);
-	if(it != index.end())
-		return it->second;
-	else
-	{
-		table.push_back(v);
-		index[v]=table.size();
-		return table.size()-1;
-	}
+    auto it = index.find(v);
+    if(it != index.end())
+        return it->second;
+    else
+    {
+        table.push_back(v);
+        index[v]=table.size()-1;
+        return table.size()-1;
+    }
 }
 
 template<class T>
-bool Table<T>::get(int id, T &v)
+T Table<T>::getValue(int id)
 {
-	if(id >= table.size())
-		return false;
-	else
-	{
-		v = table[id];
-		return true;
-	}
+    return table[id];
+}
+
+template<class T>
+int Table<T>::getID(T v)
+{
+    return index[v];
+}
+
+template<class T>
+bool Table<T>::has(T v)
+{
+    return index.find(v) != index.end();
 }
 
 #endif

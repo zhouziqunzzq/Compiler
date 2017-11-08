@@ -5,19 +5,10 @@
 #include "Table.h"
 using namespace std;
 
-typedef Table<string> DelimiterTable;
-
-void fillDT(DelimiterTable *dt)
+class DelimiterTable : public Table<string>
 {
-	dt->fill("+");
-	dt->fill("-");
-	dt->fill("*");
-	dt->fill("/");
-	dt->fill("(");
-	dt->fill(")");
-	dt->fill(",");
-	dt->fill(";");
-	dt->fill("=");
-}
+public:
+    DelimiterTable();
+};
 
 #endif

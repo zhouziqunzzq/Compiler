@@ -1,21 +1,32 @@
 #ifndef TYPETABLE_H
 #define TYPETABLE_H
 
-#include<vector>
+#include "Table.h"
 using namespace std;
 
 enum Tval
 {
-	INTEGER = 1,
-	FLOAT = 2
+    INTEGER = 1,
+    FLOAT = 2
 };
 
 struct TypeTableRecord
 {
-	Tval tval;
-	int tptr;
+    Tval tval;
+    int tptr;
+
+    friend bool operator<(const TypeTableRecord &ls, const TypeTableRecord &rs)
+	{
+	    return ls.tval < rs.tval;
+	}
 };
 
-typedef vector<TypeTableRecord> TypeTable;
+class TypeTable : public Table<TypeTableRecord>
+{
+public:
+    TypeTable();
+    using Table<TypeTableRecord>::entry;
+    int entry(Tval tv, int tp);
+};
 
 #endif

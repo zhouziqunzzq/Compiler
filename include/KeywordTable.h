@@ -5,13 +5,10 @@
 #include "Table.h"
 using namespace std;
 
-typedef Table<string> KeywordTable;
-
-void fillKT(KeywordTable *kt)
+class KeywordTable : public Table<string>
 {
-	kt->fill("const");
-	kt->fill("int");
-	kt->fill("float");
-}
+public:
+    KeywordTable();
+};
 
 #endif

@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -22,6 +23,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -32,7 +34,20 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Unit filename="include/Category.h" />
+		<Unit filename="include/ConstTable.h" />
+		<Unit filename="include/DelimiterTable.h" />
+		<Unit filename="include/HandleFuncTable.h" />
+		<Unit filename="include/KeywordTable.h" />
+		<Unit filename="include/Scanner.h" />
+		<Unit filename="include/SymbolTable.h" />
+		<Unit filename="include/Table.h" />
+		<Unit filename="include/Token.h" />
+		<Unit filename="include/TypeTable.h" />
+		<Unit filename="include/Vall.h" />
+		<Unit filename="src/HandleFuncTable.cpp" />
+		<Unit filename="src/Scanner.cpp" />
+		<Unit filename="src/Token.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
