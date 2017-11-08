@@ -31,4 +31,16 @@ int Table<T>::fill(T v)
 	}
 }
 
+template<class T>
+bool Table<T>::get(int id, T &v)
+{
+	if(id >= table.size())
+		return false;
+	else
+	{
+		v = table[id];
+		return true;
+	}
+}
+
 #endif
