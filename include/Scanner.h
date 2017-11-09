@@ -1,45 +1,57 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
-class Scanner;
-
 #include "Token.h"
 #include "ConstTable.h"
 #include "SymbolTable.h"
 #include "KeywordTable.h"
 #include "DelimiterTable.h"
-#include "HandleFuncTable.h"
+#include "StateChangeTable.h"
 #include <string>
 using namespace std;
 
 class Scanner
 {
-    public:
-        Scanner(string s);
+    typedef void(Scanner::*HandleFuncPtr)();
+    typedef map<int, HandleFuncPtr> HandleFuncTable;
+public:
+    Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
+            StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
+            SymbolTable *st);
+    void next();
+    const Token& getLastToken() const;
 
-    protected:
+protected:
 
-    private:
-        string content;
-        string buffer;
-        int curIndex;
-        int curState;
-        int lastState;
-        Token lastToken;
-        //StateChangeTable sct;
-        HandleFuncTable hft;
-        KeywordTable *kt;
-        DelimiterTable *dt;
-        CharConstTable *ct;
-        StrConstTable *sct;
-        IntConstTable *ict;
-        FloatConstTable *fct;
-        SymbolTable *st;
-        void reset();
-        void rewind();
-        void next();
+private:
+    string content;
+    string buffer;
+    size_t curIndex;
+    int curState;
+    int lastState;
+    bool isEnd;
+    Token lastToken;
+    StateChangeTable sct;
+    HandleFuncTable hft;
+    KeywordTable *kt;
+    DelimiterTable *dt;
+    CharConstTable *cct;
+    StrConstTable *strct;
+    IntConstTable *ict;
+    FloatConstTable *fct;
+    SymbolTable *st;
+    void reset();
+    void rewind();
 
-    friend class HandleFuncTable;
+    void handleEmpty();
+    void handleKeywordIdentifier();
+    void handleFloatConst();
+    void handleIntConst();
+    void handleCharConst();
+    void handleStringConst();
+    void handleDelimiter();
+    void handleComment();
+    void handleScientificNotationConstant();
 };
 
 #endif // SCANNER_H
