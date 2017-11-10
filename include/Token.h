@@ -7,7 +7,7 @@ using namespace std;
 enum TokenType
 {
 	KEYWORD = 1,
-	DELIMETER = 2,
+	DELIMITER = 2,
 	CHARCONST = 3,
 	STRCONST = 4,
 	INTCONST = 5,
