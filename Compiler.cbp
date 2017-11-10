@@ -37,17 +37,22 @@
 		<Unit filename="include/Category.h" />
 		<Unit filename="include/ConstTable.h" />
 		<Unit filename="include/DelimiterTable.h" />
-		<Unit filename="include/HandleFuncTable.h" />
 		<Unit filename="include/KeywordTable.h" />
 		<Unit filename="include/Scanner.h" />
+		<Unit filename="include/StateChangeTable.h" />
 		<Unit filename="include/SymbolTable.h" />
 		<Unit filename="include/Table.h" />
 		<Unit filename="include/Token.h" />
 		<Unit filename="include/TypeTable.h" />
 		<Unit filename="include/Vall.h" />
-		<Unit filename="src/HandleFuncTable.cpp" />
+		<Unit filename="src/DelimiterTable.cpp" />
+		<Unit filename="src/KeywordTable.cpp" />
 		<Unit filename="src/Scanner.cpp" />
+		<Unit filename="src/StateChangeTable.cpp" />
+		<Unit filename="src/SymbolTable.cpp" />
 		<Unit filename="src/Token.cpp" />
+		<Unit filename="src/TypeTable.cpp" />
+		<Unit filename="src/main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
