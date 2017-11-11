@@ -4,7 +4,7 @@
 
 using namespace std;
 
-RDAnalyzer::RDAnalyzer(Scanner *sc) : sc(sc){}
+RDAnalyzer::RDAnalyzer(Scanner *sc) : sc(sc), opa(sc){}
 
 bool RDAnalyzer::analyze()
 {
@@ -34,8 +34,7 @@ bool RDAnalyzer::ST()
 		if(tmp.word == "=")
 		{
 			sc->next();
-//			return E();
-			return 0;
+			return opa.E();
 		}
 		else return false;
 	}
@@ -115,8 +114,7 @@ bool RDAnalyzer::IS()
 	if((tmp.type == DELIMITER) && (tmp.word == "="))
 	{
 		sc->next();
-//		return E();
-		return 0;
+		return opa.E();
 	}
 	return true;
 }

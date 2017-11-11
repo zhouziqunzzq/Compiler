@@ -2,12 +2,13 @@
 #define RDAnalyzer_H
 
 #include "Scanner.h"
+#include "OPAnalyzer.h"
 
 class RDAnalyzer
 {
 	private:
 		Scanner *sc;
-
+		OPAnalyzer opa;
 		bool PG();
 		bool ST();
 		bool VS();
@@ -22,7 +23,6 @@ class RDAnalyzer
 		
 	public:	
 		RDAnalyzer(Scanner *sc);
-
 		bool analyze();
 };
 
