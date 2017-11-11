@@ -4,7 +4,7 @@
 
 using namespace std;
 
-RDAnalyzer::RDAnalyzer(Scanner *sc) : sc(sc) {}
+RDAnalyzer::RDAnalyzer(Scanner *sc) : sc(sc), opa(sc){}
 
 bool RDAnalyzer::analyze()
 {
@@ -28,20 +28,19 @@ bool RDAnalyzer::PG()
 
 bool RDAnalyzer::ST()
 {
-    Token tmp = sc->getLastToken();
-    if(tmp.type == IDENTIFIER)
-    {
-        sc->next();
-        tmp = sc->getLastToken();
-        if(tmp.word == "=")
-        {
-            sc->next();
-//			return E();
-            return 0;
-        }
-        else return false;
-    }
-    else return (VD()&&TP()&&IT());
+	Token tmp = sc->getLastToken();
+	if(tmp.type == IDENTIFIER)
+	{
+		sc->next();
+		tmp = sc->getLastToken();
+		if(tmp.word == "=")
+		{
+			sc->next();
+			return opa.E();
+		}
+		else return false;
+	}
+	else return (VD()&&TP()&&IT());
 }
 
 bool RDAnalyzer::VD()
@@ -113,12 +112,11 @@ bool RDAnalyzer::PD()
 
 bool RDAnalyzer::IS()
 {
-    Token tmp = sc->getLastToken();
-    if((tmp.type == DELIMITER) && (tmp.word == "="))
-    {
-        sc->next();
-//		return E();
-        return 0;
-    }
-    return true;
+	Token tmp = sc->getLastToken();
+	if((tmp.type == DELIMITER) && (tmp.word == "="))
+	{
+		sc->next();
+		return opa.E();
+	}
+	return true;
 }
