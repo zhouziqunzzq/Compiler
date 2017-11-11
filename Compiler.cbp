@@ -36,8 +36,11 @@
 		</Compiler>
 		<Unit filename="include/Category.h" />
 		<Unit filename="include/ConstTable.h" />
+		<Unit filename="include/DAGOptimizer.h" />
 		<Unit filename="include/DelimiterTable.h" />
 		<Unit filename="include/KeywordTable.h" />
+		<Unit filename="include/Quadruple.h" />
+		<Unit filename="include/RDAnalyzer.h" />
 		<Unit filename="include/Scanner.h" />
 		<Unit filename="include/StateChangeTable.h" />
 		<Unit filename="include/SymbolTable.h" />
@@ -45,8 +48,10 @@
 		<Unit filename="include/Token.h" />
 		<Unit filename="include/TypeTable.h" />
 		<Unit filename="include/Vall.h" />
+		<Unit filename="src/DAGOptimizer.cpp" />
 		<Unit filename="src/DelimiterTable.cpp" />
 		<Unit filename="src/KeywordTable.cpp" />
+		<Unit filename="src/RDAnalyzer.cpp" />
 		<Unit filename="src/Scanner.cpp" />
 		<Unit filename="src/StateChangeTable.cpp" />
 		<Unit filename="src/SymbolTable.cpp" />

@@ -184,7 +184,7 @@ void Scanner::handleDelimiter()
     rewind();
     if (dt->has(buffer))
     {
-        lastToken.type = DELIMETER;
+        lastToken.type = DELIMITER;
         lastToken.id = dt->getID(buffer);
         lastToken.word = buffer;
     }
