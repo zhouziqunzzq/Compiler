@@ -5,6 +5,7 @@
 #include "DelimiterTable.h"
 #include "ConstTable.h"
 #include "SymbolTable.h"
+#include "RDAnalyzer.h"
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -12,7 +13,7 @@ int main(int argc, char *argv[])
     /*Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
         StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
         SymbolTable *st)*/
-    string test = "a+b=1.2e5;\n";
+    string test = "float a; int b;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     FloatConstTable fct;
     SymbolTable st;
     Scanner sc(test, &kt, &dt, &cct, &strct, &ict, &fct, &st);
+    /*
     while (sc.getLastToken().type != ERROR &&
             sc.getLastToken().type != END)
     {
@@ -30,6 +32,8 @@ int main(int argc, char *argv[])
             cout << sc.getLastToken().word << endl;
         else
             cout << "END" << endl;
-    }
+    }*/
+    RDAnalyzer ra(&sc);
+    cout << ra.analyze() << endl;
     return 0;
 }

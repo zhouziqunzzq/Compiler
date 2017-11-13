@@ -26,7 +26,7 @@ class Token
 		int id;
 
 		Token();
-		Token(TokenType t, string &w, int id);
+		Token(TokenType t, string w, int id);
 };
 
 #endif

@@ -8,22 +8,21 @@ RDAnalyzer::RDAnalyzer(Scanner *sc) : sc(sc), opa(sc){}
 
 bool RDAnalyzer::analyze()
 {
+    sc->next();
     return PG();
 }
 
 bool RDAnalyzer::PG()
 {
-    bool flag = true;
     do
     {
         if(!ST())
         {
-            flag = false;
-            break;
+            return false;
         }
     }
-    while(true);
-    return flag;
+    while(sc->getLastToken().type != END);
+    return true;
 }
 
 bool RDAnalyzer::ST()
@@ -40,7 +39,20 @@ bool RDAnalyzer::ST()
 		}
 		else return false;
 	}
-	else return (VD()&&TP()&&IT());
+	else
+    {
+        bool flag = VD()&&TP()&&IT();
+        if (!flag)
+            return false;
+        if (sc->getLastToken().type == DELIMITER &&
+            sc->getLastToken().word == ";")
+        {
+            sc->next();
+            return true;
+        }
+        else
+            return false;
+    }
 }
 
 bool RDAnalyzer::VD()
@@ -76,7 +88,7 @@ bool RDAnalyzer::IT()
                 if(!IT())
                     flag = false;
             }
-            else flag = false;
+            else break;
             if(flag == false) break;
         }
         return flag;

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Quadruple.h"
+#include "QuadrupleTable.h"
 using namespace std;
 
 struct DAGNode
@@ -14,16 +15,20 @@ struct DAGNode
     DAGNode* to;
 };
 
-
 class DAGOptimizer
 {
     public:
-        DAGOptimizer();
+        DAGOptimizer(QuadrupleTable *qt);
+        QuadrupleTable optimize();
 
     protected:
 
     private:
         vector<DAGNode> node;
+        QuadrupleTable *qt;
+        void buildDAG();
+
+
 };
 
 #endif // DAGOPTIMIZER_H
