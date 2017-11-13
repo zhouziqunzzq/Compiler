@@ -4,6 +4,9 @@
 #include<vector>
 using namespace std;
 
+const int INTSIZE = 4;
+const int FLOATSIZE = 4;
+
 struct VallRecord
 {
 	int offset;

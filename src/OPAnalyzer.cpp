@@ -117,14 +117,16 @@ string OPAnalyzer::getS(stack<Token> &st)
 {
 	Token tmp = st.top();
 	st.pop();
-	string res = tmp.word;
-	while(mp[getWord(st.top())][getWord(tmp)] != '<')
+	string res = getWord(tmp);
+	//cout << "st.empty: " << st.empty() << endl;
+	while(!st.empty() && mp[getWord(st.top())][getWord(tmp)] != '<')
 	{
 		tmp = st.top();
 		st.pop();
-		res += tmp.word;
+		res += getWord(tmp);
 		if(st.empty()) break;
 	}
+	//cout << "res: " << res << endl;
 	return res;
 }
 
@@ -132,7 +134,7 @@ bool OPAnalyzer::E()
 {
 	stack<Token> st;
 	bool flag = true;
-	while(!st.empty()) st.pop();
+	//while(!st.empty()) st.pop();
 	Token t1 = sc->getLastToken();
 	while(true)
 	{
@@ -153,6 +155,7 @@ bool OPAnalyzer::E()
 		}
 		auto it1 = mp.find(getWord(t1));
 		auto it2 = mp.find(getWord(t2));
+		cout << getWord(t2) << mp[getWord(t2)][getWord(t1)] << getWord(t1) << endl;
 		if((it1 != mp.end()) && (it2 != mp.end()))
 		{
 			if(mp[getWord(t2)][getWord(t1)] == '>')
@@ -162,7 +165,8 @@ bool OPAnalyzer::E()
 				if(ts != g.end())
 				{
 					Token to(KEYWORD, g[stmp], -1);
-					st.push(to);
+					if (to.word != "")
+                        st.push(to);
 				}
 				else flag = false;
 			}
@@ -173,7 +177,23 @@ bool OPAnalyzer::E()
 				t1 = sc->getLastToken();
 			}
 		}
-		else flag = false;
+		else if (it1 == mp.end())
+		{
+		    // End of OPAnalyze, perform the final step
+
+		    cout << "st.empty: " << st.empty() << endl;
+		    if (st.empty())
+		    {
+		        cout << "OP1: " << 1 << endl;
+		        return true;
+		    }
+		    else
+            {
+                flag = false;
+            }
+
+		}
+            //flag = false;
 		if(flag == false) break;
 		if(st.empty()) break;
 		if(st.size() == 1)
@@ -186,5 +206,6 @@ bool OPAnalyzer::E()
 			}
 		}
 	}
+	cout << "OP2: " << flag << endl;
 	return flag;
 }

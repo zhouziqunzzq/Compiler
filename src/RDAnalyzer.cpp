@@ -1,29 +1,37 @@
 #include<bits/stdc++.h>
 #include "RDAnalyzer.h"
 #include "Token.h"
+#include "Vall.h"
 
 using namespace std;
 
-RDAnalyzer::RDAnalyzer(Scanner *sc) : sc(sc), opa(sc){}
+RDAnalyzer::RDAnalyzer(Scanner *sc) : sc(sc), opa(sc), qt(qt){}
 
 bool RDAnalyzer::analyze()
 {
+    sc->next();
     return PG();
 }
 
 bool RDAnalyzer::PG()
 {
-    bool flag = true;
     do
     {
         if(!ST())
         {
-            flag = false;
-            break;
+            return false;
         }
     }
-    while(true);
-    return flag;
+    while(sc->getLastToken().type != END);
+    return true;
+}
+
+void RDAnalyzer::ASSI()
+{
+    Token tempa = sem.pop();
+    Token tempb = sem.pop();
+    Quadruple qd(ASSIGN, tempa, -1, tempb);
+    qt.push_back(qd);
 }
 
 bool RDAnalyzer::ST()
@@ -35,20 +43,53 @@ bool RDAnalyzer::ST()
 		tmp = sc->getLastToken();
 		if(tmp.word == "=")
 		{
+		    ASSI();
 			sc->next();
 			return opa.E();
 		}
 		else return false;
 	}
-	else return (VD()&&TP()&&IT());
+	else
+    {
+        bool flag = VD()&&TP()&&IT();
+        if (!flag)
+            return false;
+        if (sc->getLastToken().type == DELIMITER &&
+            sc->getLastToken().word == ";")
+        {
+            sc->next();
+            return true;
+        }
+        else
+            return false;
+    }
 }
 
 bool RDAnalyzer::VD()
 {
     Token tmp = sc->getLastToken();
     if((tmp.type == KEYWORD) && (tmp.word == "const"))
+    {
+        constflag = 1;
         sc->next();
+    }
     return true;
+}
+
+void RDAnalyzer::Typ(Token tmp)
+{
+    if(tmp.word =="int")
+            {
+                intflag = 1;
+                if(constflag == 1)
+                    constintflag = 1;
+            }
+            else
+            {
+                floatflag = 1;
+                if(constflag == 1)
+                    constfloatflag = 1;
+            }
 }
 
 bool RDAnalyzer::TP()
@@ -56,16 +97,48 @@ bool RDAnalyzer::TP()
     Token tmp = sc->getLastToken();
     if((tmp.type == KEYWORD) && ((tmp.word == "int") || (tmp.word == "float")))
     {
-        sc->next();
+        {
+            Typ(tmp);
+            sc->next();
+        }
         return true;
     }
     return false;
+}
+
+void RDAnalyzer::Ent()
+{
+    if(intflag == 1)
+            {
+                sc->st->entryType(sc->getLastToken().id,1);
+                VallRecord r;
+                r.offset = sc->vall->totoffset;
+                sc->vall->v.push_back(r);
+                sc->vall->totoffset += INTSIZE;
+                sc->st->entryAddr(sc->getLastToken().id,entloop++);
+                if(constintflag == 1)
+                    {
+                        sc->st->entryCat(sc->getLastToken().id,IC);
+                    }
+
+            }
+    else if(floatflag == 1)
+            {
+                sc->st->entryType(sc->getLastToken().id,2);
+                VallRecord r;
+                r.offset = sc->vall->totoffset;
+                sc->vall->v.push_back(r);
+                sc->vall->totoffset += FLOATSIZE;
+                if(constfloatflag == 1)
+                    sc->st->entryCat(sc->getLastToken().id,FC);
+            }
 }
 
 bool RDAnalyzer::IT()
 {
     if(IFD())
     {
+        Ent();
         bool flag = true;
         while(true)
         {
@@ -76,7 +149,7 @@ bool RDAnalyzer::IT()
                 if(!IT())
                     flag = false;
             }
-            else flag = false;
+            else break;
             if(flag == false) break;
         }
         return flag;

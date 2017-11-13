@@ -39,7 +39,9 @@
 		<Unit filename="include/DAGOptimizer.h" />
 		<Unit filename="include/DelimiterTable.h" />
 		<Unit filename="include/KeywordTable.h" />
+		<Unit filename="include/OPAnalyzer.h" />
 		<Unit filename="include/Quadruple.h" />
+		<Unit filename="include/QuadrupleTable.h" />
 		<Unit filename="include/RDAnalyzer.h" />
 		<Unit filename="include/Scanner.h" />
 		<Unit filename="include/StateChangeTable.h" />
@@ -51,6 +53,7 @@
 		<Unit filename="src/DAGOptimizer.cpp" />
 		<Unit filename="src/DelimiterTable.cpp" />
 		<Unit filename="src/KeywordTable.cpp" />
+		<Unit filename="src/OPAnalyzer.cpp" />
 		<Unit filename="src/RDAnalyzer.cpp" />
 		<Unit filename="src/Scanner.cpp" />
 		<Unit filename="src/StateChangeTable.cpp" />
