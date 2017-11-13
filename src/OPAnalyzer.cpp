@@ -7,6 +7,7 @@ OPAnalyzer::OPAnalyzer(Scanner *sc) : sc(sc)
 {
 	init_mp();
 	init_g();
+	init_vcat();
 }
 
 void OPAnalyzer::init_mp()
@@ -77,7 +78,7 @@ void OPAnalyzer::init_mp()
 
 void OPAnalyzer::init_g()
 {
-	/*g["E+T"] = "E";
+	g["E+T"] = "E";
 	g["E-T"] = "E";
 	g["T"] = "E";
 	g["T*F"] = "T";
@@ -86,14 +87,19 @@ void OPAnalyzer::init_g()
 	g["GF"] = "F";
 	g["(E)"] = "F";
 	g["id"] = "GF";
-	g["c"] = "GF";*/
-	g["+"] = "";
-	g["-"] = "";
-	g["*"] = "";
-	g["/"] = "";
-	g["()"] = "";
-	g["id"] = "";
-	g["c"] = "";
+	g["c"] = "GF";
+}
+
+void OPAnalyzer::init_vcat()
+{
+	v_cat["+"] = 1;
+	v_cat["-"] = 1;
+	v_cat["*"] = 1;
+	v_cat["/"] = 1;
+	v_cat["("] = 1;
+	v_cat[")"] = 1;
+	v_cat["id"] = 1;
+	v_cat["c"] = 1;
 }
 
 string OPAnalyzer::getWord(Token tmp)
@@ -117,8 +123,8 @@ string OPAnalyzer::getS(stack<Token> &st)
 	{
 		tmp = st.top();
 		st.pop();
-		//cout << "getS::tmp.word: " << tmp.word << endl;
 		res += getWord(tmp);
+		if(st.empty()) break;
 	}
 	//cout << "res: " << res << endl;
 	return res;
@@ -130,8 +136,7 @@ bool OPAnalyzer::E()
 	bool flag = true;
 	//while(!st.empty()) st.pop();
 	Token t1 = sc->getLastToken();
-	//cout << "t1.word: " << t1.word << endl;
-	while(t1.type != END)
+	while(true)
 	{
 		if(st.empty())
 		{
@@ -140,7 +145,14 @@ bool OPAnalyzer::E()
 			t1 = sc->getLastToken();
 		}
 		Token t2 = st.top();
-		//st.pop();
+		st.pop();
+		if((v_cat.find(getWord(t2))!=v_cat.end()) && (v_cat[getWord(t2)]==1))
+		{
+			stack.push(t1);
+			sc->next();
+			t1 = sc->getLastToken();
+			continue;
+		}
 		auto it1 = mp.find(getWord(t1));
 		auto it2 = mp.find(getWord(t2));
 		cout << getWord(t2) << mp[getWord(t2)][getWord(t1)] << getWord(t1) << endl;
@@ -183,6 +195,16 @@ bool OPAnalyzer::E()
 		}
             //flag = false;
 		if(flag == false) break;
+		if(st.empty()) break;
+		if(st.size() == 1)
+		{
+			Token tt=st.top();
+			if((v_cat.find(getWord(tt))!=v_cat.end()) && (v_cat[getWord(tt)]==1))
+			{
+				flag = true;
+				break;
+			}
+		}
 	}
 	cout << "OP2: " << flag << endl;
 	return flag;
