@@ -6,6 +6,7 @@
 #include "ConstTable.h"
 #include "SymbolTable.h"
 #include "RDAnalyzer.h"
+#include "Vall.h"
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -21,7 +22,8 @@ int main(int argc, char *argv[])
     IntConstTable ict;
     FloatConstTable fct;
     SymbolTable st;
-    Scanner sc(test, &kt, &dt, &cct, &strct, &ict, &fct, &st);
+    Vall vall;
+    Scanner sc(test, &kt, &dt, &cct, &strct, &ict, &fct, &st, &vall);
     /*
     while (sc.getLastToken().type != ERROR &&
             sc.getLastToken().type != END)

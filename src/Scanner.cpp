@@ -7,8 +7,8 @@ using namespace std;
 
 Scanner::Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
         StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
-        SymbolTable *st) : kt(kt), dt(dt), cct(cct),
-        strct(strct), ict(ict), fct(fct), st(st), content(s)
+        SymbolTable *st, Vall* vall) : kt(kt), dt(dt), cct(cct),
+        strct(strct), ict(ict), fct(fct), st(st), vall(vall), content(s)
 {
     curIndex = 0;
     curState = 1;
