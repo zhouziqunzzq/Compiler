@@ -24,6 +24,9 @@ class SymbolTable : public Table<SymbolTableRecord>
 public:
     using Table<SymbolTableRecord>::entry;
     int entry(string n, int t, Category c, int a);
+    void entryType(int id, int t);
+    void entryCat(int id, Category c);
+    void entryAddr(int id, int a);
 };
 
 #endif
