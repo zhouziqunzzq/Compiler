@@ -4,7 +4,10 @@
 #include "QuadrupleTable.h"
 using namespace std;
 
-DAGOptimizer::DAGOptimizer(QuadrupleTable *qt) : qt(qt)
+DAGOptimizer::DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
+            StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
+            SymbolTable *st) : qt(qt), kt(kt), dt(dt), cct(cct),
+        strct(strct), ict(ict), fct(fct), st(st), tst(tst)
 {
     buildDAG();
 }
@@ -14,7 +17,21 @@ void DAGOptimizer::buildDAG()
     for (auto it = qt->begin(); it != qt->end(); ++it)
     {
         // Insert new node if needed
-
+        if (it->opr1 >= 0)
+        {
+            if (vCache.find(it->opr1) == vCache.end())
+            {
+                //
+            }
+            else if (tCaChe.find(it->opr1) != tCaChe.end())
+            {
+                //
+            }
+        }
+        if (it->opr2 >= 0)
+        {
+            //
+        }
         switch (it->op)
         {
         case ADD:
@@ -24,6 +41,7 @@ void DAGOptimizer::buildDAG()
         case DIV:
             break;
         case ASSIGN:
+
             break;
         }
     }
