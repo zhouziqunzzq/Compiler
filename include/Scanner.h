@@ -18,6 +18,13 @@ public:
     Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
             SymbolTable *st);
+    KeywordTable *kt;
+    DelimiterTable *dt;
+    CharConstTable *cct;
+    StrConstTable *strct;
+    IntConstTable *ict;
+    FloatConstTable *fct;
+    SymbolTable *st;
     void next();
     const Token& getLastToken() const;
 
@@ -33,13 +40,6 @@ private:
     Token lastToken;
     StateChangeTable sct;
     HandleFuncTable hft;
-    KeywordTable *kt;
-    DelimiterTable *dt;
-    CharConstTable *cct;
-    StrConstTable *strct;
-    IntConstTable *ict;
-    FloatConstTable *fct;
-    SymbolTable *st;
     void reset();
     void rewind();
 
