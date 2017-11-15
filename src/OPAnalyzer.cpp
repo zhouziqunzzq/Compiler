@@ -92,14 +92,24 @@ void OPAnalyzer::init_g()
 
 void OPAnalyzer::init_vcat()
 {
-	v_cat["+"] = 1;
-	v_cat["-"] = 1;
-	v_cat["*"] = 1;
-	v_cat["/"] = 1;
-	v_cat["("] = 1;
-	v_cat[")"] = 1;
-	v_cat["id"] = 1;
-	v_cat["c"] = 1;
+	v_cat["+"] = true;
+	v_cat["-"] = true;
+	v_cat["*"] = true;
+	v_cat["/"] = true;
+	v_cat["("] = true;
+	v_cat[")"] = true;
+	v_cat["id"] = true;
+	v_cat["c"] = true;
+}
+
+bool OPAnalyzer::isEnd(string s)
+{
+    if (s == "+" || s == "-" || s == "*" || s == "/" ||
+        s == "(" || s == ")" || s == "id" || s == "c" ||
+        s == "E" || s == "T" || s == "F" || s == "GF")
+        return false;
+    else
+        return true;
 }
 
 string OPAnalyzer::getWord(Token tmp)
@@ -134,7 +144,6 @@ bool OPAnalyzer::E()
 {
 	stack<Token> st;
 	bool flag = true;
-	//while(!st.empty()) st.pop();
 	Token t1 = sc->getLastToken();
 	while(true)
 	{
@@ -146,27 +155,30 @@ bool OPAnalyzer::E()
 		}
 		Token t2 = st.top();
 		st.pop();
-		if((v_cat.find(getWord(t2))!=v_cat.end()) && (v_cat[getWord(t2)]==1))
+		// Something
+		if(v_cat.find(getWord(t2))!=v_cat.end())
 		{
-			stack.push(t1);
+			st.push(t1);
 			sc->next();
 			t1 = sc->getLastToken();
 			continue;
 		}
 		auto it1 = mp.find(getWord(t1));
 		auto it2 = mp.find(getWord(t2));
-		cout << getWord(t2) << mp[getWord(t2)][getWord(t1)] << getWord(t1) << endl;
+		printf("t1: %s, t2: %s\n", t1.word.c_str(), t2.word.c_str());
 		if((it1 != mp.end()) && (it2 != mp.end()))
 		{
 			if(mp[getWord(t2)][getWord(t1)] == '>')
 			{
 				string stmp = getS(st);
+				printf("stmp: %s\n", stmp.c_str());
 				auto ts = g.find(stmp);
 				if(ts != g.end())
 				{
 					Token to(KEYWORD, g[stmp], -1);
-					if (to.word != "")
-                        st.push(to);
+					printf("g[stmp]: %s\n", g[stmp].c_str());
+					//if (to.word != "")
+                    st.push(to);
 				}
 				else flag = false;
 			}
@@ -179,9 +191,6 @@ bool OPAnalyzer::E()
 		}
 		else if (it1 == mp.end())
 		{
-		    // End of OPAnalyze, perform the final step
-
-		    cout << "st.empty: " << st.empty() << endl;
 		    if (st.empty())
 		    {
 		        cout << "OP1: " << 1 << endl;
@@ -193,7 +202,6 @@ bool OPAnalyzer::E()
             }
 
 		}
-            //flag = false;
 		if(flag == false) break;
 		if(st.empty()) break;
 		if(st.size() == 1)

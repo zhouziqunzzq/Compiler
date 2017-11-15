@@ -5,7 +5,7 @@
 
 using namespace std;
 
-RDAnalyzer::RDAnalyzer(Scanner *sc) : sc(sc), opa(sc), qt(qt){}
+RDAnalyzer::RDAnalyzer(Scanner *sc, QuadrupleTable *qt) : sc(sc), qt(qt), opa(sc){}
 
 bool RDAnalyzer::analyze()
 {
@@ -28,10 +28,12 @@ bool RDAnalyzer::PG()
 
 void RDAnalyzer::ASSI()
 {
-    Token tempa = sem.pop();
-    Token tempb = sem.pop();
-    Quadruple qd(ASSIGN, tempa, -1, tempb);
-    qt.push_back(qd);
+    Token tempa = sem.top();
+    sem.pop();
+    Token tempb = sem.top();
+    sem.pop();
+    Quadruple qd(ASSIGN, tempa.id, -1, tempb.id);
+    qt->push_back(qd);
 }
 
 bool RDAnalyzer::ST()

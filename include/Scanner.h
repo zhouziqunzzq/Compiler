@@ -8,6 +8,7 @@
 #include "DelimiterTable.h"
 #include "StateChangeTable.h"
 #include "Vall.h"
+#include "TypeTable.h"
 #include <string>
 using namespace std;
 
@@ -18,7 +19,7 @@ class Scanner
 public:
     Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
-            SymbolTable *st, Vall *vall);
+            SymbolTable *st, Vall *vall, TypeTable *tt);
     KeywordTable *kt;
     DelimiterTable *dt;
     CharConstTable *cct;
@@ -27,6 +28,7 @@ public:
     FloatConstTable *fct;
     SymbolTable *st;
     Vall *vall;
+    TypeTable *tt;
     void next();
     const Token& getLastToken() const;
 

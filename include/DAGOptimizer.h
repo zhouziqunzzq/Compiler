@@ -4,7 +4,13 @@
 #include <vector>
 #include "Quadruple.h"
 #include "QuadrupleTable.h"
+#include "ConstTable.h"
 #include "SymbolTable.h"
+#include "KeywordTable.h"
+#include "DelimiterTable.h"
+#include "StateChangeTable.h"
+#include "Vall.h"
+#include "TypeTable.h"
 using namespace std;
 
 struct DAGNode
@@ -21,7 +27,7 @@ class DAGOptimizer
     public:
         DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
-            SymbolTable *st, SymbolTable *tst);
+            SymbolTable *st);
         QuadrupleTable optimize();
 
     protected:
@@ -34,13 +40,13 @@ class DAGOptimizer
         IntConstTable *ict;
         FloatConstTable *fct;
         SymbolTable *st;
-        SymbolTable *tst;
-        vector<DAGNode> node;
-        map<int, bool> vCache;  // cache for judging whether a given variable token id exists
-        map<int, bool> tCaChe;  // cache for judging whether a given temp variable token id exists
+        vector<DAGNode> nodes;
+        map<int, int> vCache;  // cache for judging whether a given variable token id exists
+                                // TokenID -> node.id
         QuadrupleTable *qt;
         void buildDAG();
-
+        int insertNode(int tokenID);
+        void removeTag(int tokenID);
 
 };
 

@@ -26,3 +26,14 @@ void SymbolTable::entryAddr(int id, int a)
     table[id].addr = a;
 }
 
+void SymbolTable::print()
+{
+    cout << "============================" << endl;
+    cout << "         SymbolTable        " << endl;
+    cout << "============================" << endl;
+    cout << "Name\tType\tCat\tAddr" << endl;
+    auto it = table.begin();
+    for (; it != table.end(); ++it)
+        printf("%s\t%d\t%d\t%d\n", it->name.c_str(),
+               it->type, it->cat, it->addr);
+}

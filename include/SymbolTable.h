@@ -11,7 +11,7 @@ struct SymbolTableRecord
 	string name;
 	int type;
 	Category cat;
-	int addr;
+	int addr;   // addr = -1 means tmperory
 
 	friend bool operator<(const SymbolTableRecord &ls, const SymbolTableRecord &rs)
 	{
@@ -27,6 +27,7 @@ public:
     void entryType(int id, int t);
     void entryCat(int id, Category c);
     void entryAddr(int id, int a);
+    void print();
 };
 
 #endif

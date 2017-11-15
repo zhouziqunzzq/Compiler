@@ -7,7 +7,9 @@ using namespace std;
 enum Tval
 {
     INTEGER = 1,
-    FLOAT = 2
+    FLOAT = 2,
+    CHAR = 3,
+    STRING = 4
 };
 
 struct TypeTableRecord

@@ -14,7 +14,7 @@ protected:
 
 public:
     int entry(T v);
-    T getValue(int id);
+    const T& getValue(int id) const;
     int getID(T v);
     bool has(T v);
 };
@@ -34,7 +34,7 @@ int Table<T>::entry(T v)
 }
 
 template<class T>
-T Table<T>::getValue(int id)
+const T& Table<T>::getValue(int id) const
 {
     return table[id];
 }

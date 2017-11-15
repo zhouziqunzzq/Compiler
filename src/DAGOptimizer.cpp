@@ -6,10 +6,47 @@ using namespace std;
 
 DAGOptimizer::DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
-            SymbolTable *st) : qt(qt), kt(kt), dt(dt), cct(cct),
-        strct(strct), ict(ict), fct(fct), st(st), tst(tst)
+            SymbolTable *st) : kt(kt), dt(dt), cct(cct),
+        strct(strct), ict(ict), fct(fct), st(st), qt(qt)
 {
     buildDAG();
+}
+
+int DAGOptimizer::insertNode(int tokenID)
+{
+    if (tokenID < 0)
+        return tokenID;
+    else if (vCache.find(tokenID) != vCache.end())
+        return vCache[tokenID];
+    else
+    {
+        DAGNode n;
+        n.id = nodes.size();
+        n.priTag = tokenID;
+        vCache[tokenID] = n.id;
+        nodes.push_back(n);
+        return n.id;
+    }
+}
+
+void DAGOptimizer::removeTag(int tokenID)
+{
+    if (vCache.find(tokenID) != vCache.end())
+    {
+        int nodeID = vCache[tokenID];
+        if (tokenID != nodes[nodeID].priTag)
+        {
+            auto it = nodes[nodeID].secTag.begin();
+            for (; it != nodes[nodeID].secTag.end(); ++it)
+            {
+                if (*it == tokenID)
+                {
+                    nodes[nodeID].secTag.erase(it);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 void DAGOptimizer::buildDAG()
@@ -17,31 +54,20 @@ void DAGOptimizer::buildDAG()
     for (auto it = qt->begin(); it != qt->end(); ++it)
     {
         // Insert new node if needed
-        if (it->opr1 >= 0)
-        {
-            if (vCache.find(it->opr1) == vCache.end())
-            {
-                //
-            }
-            else if (tCaChe.find(it->opr1) != tCaChe.end())
-            {
-                //
-            }
-        }
-        if (it->opr2 >= 0)
-        {
-            //
-        }
+        int nodeID1 = insertNode(it->opr1);
+        int nodeID2 = insertNode(it->opr2);
         switch (it->op)
         {
         case ADD:
         case MUL:
-            break;
         case MINUS:
         case DIV:
+            //
             break;
         case ASSIGN:
-
+            removeTag(it->rst);
+            nodes[nodeID1].secTag.push_back(it->rst);
+            vCache[it->rst] = nodeID1;
             break;
         }
     }

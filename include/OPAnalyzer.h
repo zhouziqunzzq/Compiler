@@ -17,7 +17,7 @@ class OPAnalyzer
 		string getS(stack<Token> &st);
 		struct cmp
 		{
-			bool operator()(const string s1, const string s2)const
+			bool operator()(const string s1, const string s2) const
 			{
 				bool flag = false;
 				string tmps1, tmps2;
@@ -51,7 +51,8 @@ class OPAnalyzer
 		map<string, string, cmp> g;
 		void init_vcat();
 		map<string, bool> v_cat;
-	
+        bool isEnd(string s);
+
 	public:
 		bool E();
 		OPAnalyzer(Scanner *sc);
