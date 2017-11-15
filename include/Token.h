@@ -27,6 +27,7 @@ class Token
 
 		Token();
 		Token(TokenType t, string w, int id);
+		bool operator==(const Token& t1);
 };
 
 #endif

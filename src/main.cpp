@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     /*Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
         StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
         SymbolTable *st)*/
-    string test = "float a = 1e3 + 2; int b;\n";
+    string test = "float a = ((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
     TypeTable tt;
     Scanner sc(test, &kt, &dt, &cct, &strct, &ict, &fct, &st, &vall, &tt);
 
-    testScanner(sc);
-    st.print();
+    //testScanner(sc);
+    //st.print();
 
     QuadrupleTable qt;
     RDAnalyzer ra(&sc, &qt);
 
-    //testAnalyzer(ra);
+    testAnalyzer(ra);
 
     return 0;
 }

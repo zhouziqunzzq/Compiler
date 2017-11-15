@@ -12,14 +12,15 @@ class OPAnalyzer
 	private:
 		Scanner *sc;
 		void init_mp();
-		map<string, map<string, char>> mp;
+		map<string, map<string, char> > mp;
 		string getWord(Token tmp);
-		string getS(stack<Token> &st);
+		string getS(Token &t1);
+		stack<Token> st;
+		stack<Token> tst;
 		struct cmp
 		{
-			bool operator()(const string s1, const string s2) const
+			bool operator()(const string &s1, const string &s2) const
 			{
-				bool flag = false;
 				string tmps1, tmps2;
 				bool add = 1;
 				for(string::size_type i=0; i<s1.size(); i++)
@@ -43,8 +44,8 @@ class OPAnalyzer
 						tmps2 += s2[i], add = 1;
 					else if(add == 1) tmps2 += 'x', add = 0;
 				}
-				if(tmps1.compare(tmps2) == 0) flag = true;
-				return flag;
+				//printf("tmps1: %s, tmps2: %s\n", tmps1.c_str(), tmps2.c_str());
+				return tmps1 < tmps2;
 			}
 		};
 		void init_g();

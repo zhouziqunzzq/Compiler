@@ -45,16 +45,25 @@ bool RDAnalyzer::ST()
 		tmp = sc->getLastToken();
 		if(tmp.word == "=")
 		{
-		    ASSI();
+		    //ASSI();
 			sc->next();
-			return opa.E();
+			if (opa.E())
+            {
+                if (sc->getLastToken().type == DELIMITER &&
+                    sc->getLastToken().word == ";")
+                {
+                    sc->next();
+                    return true;
+                }
+                else return false;
+            }
+            else return false;
 		}
 		else return false;
 	}
 	else
     {
-        bool flag = VD()&&TP()&&IT();
-        if (!flag)
+        if (!(VD()&&TP()&&IT()))
             return false;
         if (sc->getLastToken().type == DELIMITER &&
             sc->getLastToken().word == ";")
