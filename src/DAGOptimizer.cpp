@@ -2,6 +2,7 @@
 #include "DAGOptimizer.h"
 #include "Quadruple.h"
 #include "QuadrupleTable.h"
+#include "Category.h"
 using namespace std;
 
 DAGOptimizer::DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
@@ -62,7 +63,12 @@ void DAGOptimizer::buildDAG()
         case MUL:
         case MINUS:
         case DIV:
-            //
+            // C1 w C2
+            if (st->getValue(it->opr1).cat == C &&
+                st->getValue(it->opr2).cat == C)
+            {
+                break;
+            }
             break;
         case ASSIGN:
             removeTag(it->rst);

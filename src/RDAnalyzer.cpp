@@ -111,29 +111,26 @@ bool RDAnalyzer::TP()
 void RDAnalyzer::Ent()
 {
     if(intflag == 1)
-            {
-                sc->st->entryType(sc->getLastToken().id,1);
-                VallRecord r;
-                r.offset = sc->vall->totoffset;
-                sc->vall->v.push_back(r);
-                sc->vall->totoffset += INTSIZE;
-                sc->st->entryAddr(sc->getLastToken().id,entloop++);
-                if(constintflag == 1)
-                    {
-                        sc->st->entryCat(sc->getLastToken().id,IC);
-                    }
-
-            }
+    {
+        sc->st->entryType(sc->getLastToken().id,1);
+        VallRecord r;
+        r.offset = sc->vall->totoffset;
+        sc->vall->v.push_back(r);
+        sc->vall->totoffset += INTSIZE;
+        sc->st->entryAddr(sc->getLastToken().id,entloop++);
+        if(constintflag == 1)
+            sc->st->entryCat(sc->getLastToken().id,C);
+    }
     else if(floatflag == 1)
-            {
-                sc->st->entryType(sc->getLastToken().id,2);
-                VallRecord r;
-                r.offset = sc->vall->totoffset;
-                sc->vall->v.push_back(r);
-                sc->vall->totoffset += FLOATSIZE;
-                if(constfloatflag == 1)
-                    sc->st->entryCat(sc->getLastToken().id,FC);
-            }
+    {
+        sc->st->entryType(sc->getLastToken().id,2);
+        VallRecord r;
+        r.offset = sc->vall->totoffset;
+        sc->vall->v.push_back(r);
+        sc->vall->totoffset += FLOATSIZE;
+        if(constfloatflag == 1)
+            sc->st->entryCat(sc->getLastToken().id,C);
+    }
 }
 
 bool RDAnalyzer::IT()

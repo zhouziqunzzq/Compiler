@@ -109,7 +109,7 @@ void Scanner::handleKeywordIdentifier()
     {
         // Identifier
         lastToken.type = IDENTIFIER;
-        lastToken.id = st->entry(buffer, -1, CC, -1);
+        lastToken.id = st->entry(buffer, -1, C, -1);
         lastToken.word = buffer;
     }
     reset();
@@ -121,7 +121,7 @@ void Scanner::handleFloatConst()
     float f = stringToNum<float>(buffer);
     lastToken.type = FLOATCONST;
     lastToken.id = st->entry(buffer, tt->entry(FLOAT, -1),
-                             FC, fct->entry(f));
+                             C, fct->entry(f));
     //lastToken.id = fct->entry(f);
     lastToken.word = buffer;
     reset();
@@ -136,7 +136,7 @@ void Scanner::handleScientificNotationConstant()
     float f = myBase * pow(10, myExp);
     lastToken.type = FLOATCONST;
     lastToken.id = st->entry(buffer, tt->entry(FLOAT, -1),
-                             FC, fct->entry(f));
+                             C, fct->entry(f));
     //lastToken.id = fct->entry(f);
     lastToken.word = buffer;
     reset();
@@ -148,7 +148,7 @@ void Scanner::handleIntConst()
     int i = stringToNum<int>(buffer);
     lastToken.type = INTCONST;
     lastToken.id = st->entry(buffer, tt->entry(INTEGER, -1),
-                             IC, ict->entry(i));
+                             C, ict->entry(i));
     //lastToken.id = ict->entry(i);
     lastToken.word = buffer;
     reset();
@@ -169,7 +169,7 @@ void Scanner::handleCharConst()
         char c = buffer[1];
         lastToken.type = CHARCONST;
         lastToken.id = st->entry(buffer, tt->entry(CHAR, -1),
-                             CC, cct->entry(c));
+                             C, cct->entry(c));
         //lastToken.id = cct->entry(c);
         lastToken.word = buffer;
     }
@@ -182,7 +182,7 @@ void Scanner::handleStringConst()
     string s = buffer.length() > 2 ? buffer.substr(1, buffer.length() - 2) : "";
     lastToken.type = STRCONST;
     lastToken.id = st->entry(buffer, tt->entry(STRING, -1),
-                             SC, strct->entry(s));
+                             C, strct->entry(s));
     //lastToken.id = strct->entry(s);
     lastToken.word = buffer;
     reset();
