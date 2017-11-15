@@ -143,7 +143,7 @@ string OPAnalyzer::getS(stack<Token> &st)
 bool OPAnalyzer::E()
 {
 	stack<Token> st;
-	bool flag = true;
+	bool flag = true, f2 = false;
 	Token t1 = sc->getLastToken();
 	while(true)
 	{
@@ -156,11 +156,27 @@ bool OPAnalyzer::E()
 		Token t2 = st.top();
 		st.pop();
 		// Something
+		if(isEnd(getWord(t1)))
+		{
+			f2 = true;
+			t1 = t2;
+			t2 = st.top();
+			st.pop();
+		}
 		if(v_cat.find(getWord(t2))!=v_cat.end())
 		{
 			st.push(t1);
-			sc->next();
-			t1 = sc->getLastToken();
+			if(f2)
+			{
+				t1 = t2;
+				t2 = st.top();
+				st.pop();
+			}
+			else
+			{
+				sc->next();
+				t1 = sc->getLastToken();
+			}
 			continue;
 		}
 		auto it1 = mp.find(getWord(t1));
@@ -185,8 +201,17 @@ bool OPAnalyzer::E()
 			else
 			{
 				st.push(t1);
-				sc->next();
-				t1 = sc->getLastToken();
+				if(f2)
+				{
+					t1 = t2;
+					t2 = st.top();
+					st.pop();
+				}
+				else
+				{
+					sc->next();
+					t1 = sc->getLastToken();
+				}
 			}
 		}
 		else if (it1 == mp.end())
@@ -197,9 +222,9 @@ bool OPAnalyzer::E()
 		        return true;
 		    }
 		    else
-            {
-                flag = false;
-            }
+			{
+				flag = false;
+			}
 
 		}
 		if(flag == false) break;
