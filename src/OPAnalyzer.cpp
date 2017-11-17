@@ -204,7 +204,8 @@ bool OPAnalyzer::GEQ(char op)
     else flag = false;
     if(flag == false) return flag;
     string tname = getTmpName();
-    int rst = sc->st->entry(tname, sc->tt->getID(ttr), V, -1);
+    Category tc = (getCat(opr1) == C && getCat(opr2)) == C ? C : V;
+    int rst = sc->st->entry(tname, sc->tt->getID(ttr), tc, -1);
     Token t(IDENTIFIER, tname, rst);
     sem->push(t);
     Quadruple q(ope, opr1, opr2, rst);

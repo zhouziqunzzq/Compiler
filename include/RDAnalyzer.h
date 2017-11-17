@@ -40,6 +40,7 @@ private:
 public:
     RDAnalyzer(Scanner *sc, QuadrupleTable *qt);
     bool analyze();
+    string errorMsg;
 };
 
 #endif

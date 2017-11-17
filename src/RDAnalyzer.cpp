@@ -52,12 +52,12 @@ bool RDAnalyzer::ASSI()
                 iaddr = sc->fct->entry(i);
                 TypeTableRecord ttr;
                 ttr.tval = FLOAT;
-                sc->st->entryType(sem.top().id, sc->tt->getID(ttr));
-                sc->st->entryAddr(sem.top().id, iaddr);
+                sc->st->entryType(lastIdentifier.id, sc->tt->getID(ttr));
+                sc->st->entryAddr(lastIdentifier.id, iaddr);
             }
             else if (intflag)
             {
-                sc->st->entryAddr(sem.top().id, iaddr);
+                sc->st->entryAddr(lastIdentifier.id, iaddr);
             }
             else flag = false;
         }
@@ -70,20 +70,30 @@ bool RDAnalyzer::ASSI()
                 iaddr = sc->ict->entry(i);
                 TypeTableRecord ttr;
                 ttr.tval = INTEGER;
-                sc->st->entryType(sem.top().id, sc->tt->getID(ttr));
-                sc->st->entryAddr(sem.top().id, iaddr);
+                sc->st->entryType(lastIdentifier.id, sc->tt->getID(ttr));
+                sc->st->entryAddr(lastIdentifier.id, iaddr);
             }
             else if (floatflag)
             {
-                sc->st->entryAddr(sem.top().id, iaddr);
+                sc->st->entryAddr(lastIdentifier.id, iaddr);
             }
             else flag = false;
         }
     }
     else
     {
-        Quadruple qd(ASSIGN, sem.top().id, -1, lastIdentifier.id);
-        qt->push_back(qd);
+        // Check if lastIdentifier is const
+        if (getCat(lastIdentifier.id) == C)
+        {
+            errorMsg = errorMsg + "Variable \"" + lastIdentifier.word
+                + "\" is const and can not be assigned.";
+            flag = false;
+        }
+        else
+        {
+            Quadruple qd(ASSIGN, sem.top().id, -1, lastIdentifier.id);
+            qt->push_back(qd);
+        }
     }
     sem.pop();
     return flag;
@@ -216,8 +226,6 @@ bool RDAnalyzer::IT()
         bool flag = true;
         while(true)
         {
-            if (!ASSI())
-                return false;
             Token tmp = sc->getLastToken();
             if((tmp.type == DELIMITER) && (tmp.word == ","))
             {
@@ -267,7 +275,9 @@ bool RDAnalyzer::IS()
 	if((tmp.type == DELIMITER) && (tmp.word == "="))
 	{
 		sc->next();
-		return opa.E(constflag);
+		if (opa.E(constflag))
+            return ASSI();
+        else return false;
 	}
 	return true;
 }

@@ -7,6 +7,7 @@
 #include "Quadruple.h"
 
 #define getTval(t) sc->tt->getValue(sc->st->getValue((t)).type).tval
+#define getCat(t) sc->st->getValue((t)).cat
 #define getIntVal(t) sc->ict->getValue(sc->st->getValue((t)).addr)
 #define getFloatVal(t) sc->fct->getValue(sc->st->getValue((t)).addr)
 

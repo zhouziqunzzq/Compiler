@@ -29,8 +29,10 @@ void testAnalyzer(Scanner &sc, RDAnalyzer &ra)
     bool flag = ra.analyze();
     if (!flag)
     {
-        printf("ERROR: Invalid token \"%s\" found at position %d.\n",
+        printf("ERROR: \tInvalid token \"%s\" found at position %d.\n",
                sc.getLastToken().word.c_str(), sc.getCurIndex());
+        if (ra.errorMsg != "")
+            printf("\t%s\n", ra.errorMsg.c_str());
     }
     else
         printf("OK.\n");
@@ -65,7 +67,7 @@ void printQT(const QuadrupleTable &qt)
 
 int main(int argc, char *argv[])
 {
-    string test = "const int a = 2.333 + 3.222;\n";//((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
+    string test = "int a = 1.2 + 2 * 3; a = 123.234;\n";//((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
