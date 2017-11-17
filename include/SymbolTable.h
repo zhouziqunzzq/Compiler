@@ -11,7 +11,10 @@ struct SymbolTableRecord
 	string name;
 	int type;
 	Category cat;
-	int addr;   // addr = -1 means temp
+	int addr;   // addr = -1 means temp in Scanner and Analyzer
+	bool isTemp;    // useful when optimizing
+	bool isUsed;    // useful when optimizing
+	bool isActive;  // useful in ASM generation
 
 	friend bool operator<(const SymbolTableRecord &ls, const SymbolTableRecord &rs)
 	{
@@ -27,7 +30,12 @@ public:
     void entryType(int id, int t);
     void entryCat(int id, Category c);
     void entryAddr(int id, int a);
-    void print();
+    void print(bool ignoreUnused);
+
+    vector<SymbolTableRecord> &getTable()
+    {
+        return table;
+    }
 };
 
 #endif

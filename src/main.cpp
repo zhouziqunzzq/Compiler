@@ -71,7 +71,7 @@ void printQT(const QuadrupleTable &qt)
 
 int main(int argc, char *argv[])
 {
-    string test = "int a, b; int c = a * b; int d = b * a + c;\n";
+    string test = "int a, b = 1 + 2 + 3; int c = a * b + b; int d = b * a + 3.2;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
@@ -93,14 +93,15 @@ int main(int argc, char *argv[])
 
     printQT(qt);
 
-    DAGOptimizer optimizer(&qt, &kt, &dt, &cct, &strct, &ict, &fct, &st, &tt);
+    DAGOptimizer optimizer(&qt, &kt, &dt, &cct, &strct, &ict, &fct, &st, &tt, &vall);
     optimizer.print();
-    st.print();
+    st.print(false);
     ict.print("IntConstTable");
     fct.print("FloatConstTable");
 
     QuadrupleTable new_qt = optimizer.optimize();
     printQT(new_qt);
+    st.print(true);
 
     return 0;
 }

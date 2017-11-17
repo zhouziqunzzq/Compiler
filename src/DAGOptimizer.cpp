@@ -14,8 +14,8 @@ using namespace std;
 
 DAGOptimizer::DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
-            SymbolTable *st, TypeTable *tt) : kt(kt), dt(dt), cct(cct),
-        strct(strct), ict(ict), fct(fct), st(st), tt(tt), qt(qt)
+            SymbolTable *st, TypeTable *tt, Vall *vall) : kt(kt), dt(dt), cct(cct),
+        strct(strct), ict(ict), fct(fct), st(st), tt(tt), vall(vall), qt(qt)
 {
     buildDAG();
 }
@@ -221,6 +221,7 @@ QuadrupleTable DAGOptimizer::optimize()
             q.opr1 = nodes[it->pl].priTag;
             q.opr2 = nodes[it->pr].priTag;
             q.rst = it->priTag;
+            optimizeSymbolTable(q);
             new_qt.push_back(q);
         }
         if (st->getValue(it->priTag).addr != -1 &&
@@ -236,12 +237,39 @@ QuadrupleTable DAGOptimizer::optimize()
                     q.opr1 = it->priTag;
                     q.opr2 = -1;
                     q.rst = *iit;
+                    optimizeSymbolTable(q);
                     new_qt.push_back(q);
                 }
             }
         }
     }
     return new_qt;
+}
+
+void DAGOptimizer::enableTemp(vector<SymbolTableRecord> &t, int id)
+{
+    t[id].isUsed = true;
+    t[id].isTemp = t[id].addr == -1;
+    if (t[id].isTemp)
+    {
+        VallRecord r;
+        r.offset = vall->totoffset;
+        vall->v.push_back(r);
+        if (tt->getValue(t[id].type).tval == INTEGER)
+            vall->totoffset += INTSIZE;
+        else
+            vall->totoffset += FLOATSIZE;
+        st->entryAddr(id, r.offset);
+    }
+}
+
+void DAGOptimizer::optimizeSymbolTable(const Quadruple &q)
+{
+    vector<SymbolTableRecord> &t = st->getTable();
+    enableTemp(t, q.opr1);
+    enableTemp(t, q.rst);
+    if (q.op != BLANK)
+        enableTemp(t, q.opr2);
 }
 
 int DAGOptimizer::calcInteger(const Quadruple &q)
