@@ -11,6 +11,7 @@
 #include "StateChangeTable.h"
 #include "Vall.h"
 #include "TypeTable.h"
+#include "utils.h"
 using namespace std;
 
 struct DAGNode
@@ -19,7 +20,16 @@ struct DAGNode
     int priTag;
     vector<int> secTag;
     Operation op;
-    DAGNode* to;
+    int pl, pr;
+
+    DAGNode()
+    {
+        id = -1;
+        priTag = -1;
+        op = BLANK;
+        pl = -1;
+        pr = -1;
+    }
 };
 
 class DAGOptimizer
@@ -29,6 +39,7 @@ class DAGOptimizer
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
             SymbolTable *st, TypeTable *tt);
         QuadrupleTable optimize();
+        void print();
 
     protected:
 
@@ -48,8 +59,9 @@ class DAGOptimizer
         void buildDAG();
         int insertNode(int tokenID);
         void removeTag(int tokenID);
-        int calcInteger(const Quadruple &q) const;
-        float calcFloat(const Quadruple &q) const;
+        void insertTag(int nodeID, int tag);
+        int calcInteger(const Quadruple &q);
+        float calcFloat(const Quadruple &q);
 
 };
 

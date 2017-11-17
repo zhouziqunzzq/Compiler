@@ -6,6 +6,7 @@ using namespace std;
 
 enum Operation
 {
+    BLANK = -1,
     ADD = 0,
     MINUS = 1,
     MUL = 2,
@@ -22,6 +23,7 @@ struct Quadruple
 
     Quadruple(Operation op, int opr1, int opr2, int rst) :
         op(op), opr1(opr1), opr2(opr2), rst(rst) {}
+    Quadruple() {}
 };
 
 #endif // QUADRUPLE_H_INCLUDED

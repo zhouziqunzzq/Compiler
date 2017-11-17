@@ -3,10 +3,13 @@
 #include "Quadruple.h"
 #include "QuadrupleTable.h"
 #include "Category.h"
-#define isInteger(x) tt->getValue(st->getValue((x)).type).tval == INTEGER
-#define isFloat(x) tt->getValue(st->getValue((x)).type).tval == FLOAT
-#define getIntConst(x) ict->getValue(st->getValue((x)).addr)
-#define getFloatConst(x) fct->getValue(st->getValue((x)).addr)
+#define getTvalDAG(x) tt->getValue(st->getValue((x)).type).tval
+#define getIntValDAG(x) ict->getValue(st->getValue((x)).addr)
+#define getFloatValDAG(t) fct->getValue(st->getValue((t)).addr)
+#define isInteger(x) getTvalDAG(x) == INTEGER
+#define isFloat(x) getTvalDAG(x) == FLOAT
+#define getIntConst(x) ict->getValue(st->getValue(nodes[vCache[(x)].back()].priTag).addr)
+#define getFloatConst(x) fct->getValue(st->getValue(nodes[vCache[(x)].back()].priTag).addr)
 using namespace std;
 
 DAGOptimizer::DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
@@ -17,14 +20,38 @@ DAGOptimizer::DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable 
     buildDAG();
 }
 
+void DAGOptimizer::print()
+{
+    for (auto it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        printf("#########################\n");
+        printf("id: %d\n", it->id);
+        printf("priTag: %s\n", st->getValue(it->priTag).name.c_str());
+        printf("secTag(%d): ", it->secTag.size());
+        for (auto iit = it->secTag.begin(); iit != it->secTag.end(); ++iit)
+        {
+            printf("%s ", st->getValue(*iit).name.c_str());
+        }
+        printf("\n");
+        printf("op: %d\n", it->op);
+        if (it->pl != -1)
+            printf("pl.id: %d\n", it->pl);
+        if (it->pr != -1)
+            printf("pr.id: %d\n", it->pr);
+    }
+}
+
 int DAGOptimizer::insertNode(int tokenID)
 {
     if (tokenID < 0)
         return tokenID;
     else if (vCache.find(tokenID) != vCache.end())
-        return *(vCache[tokenID].end() - 1);
+    {
+        return vCache[tokenID].back();
+    }
     else
     {
+        cout << "Insert " << st->getValue(tokenID).name << endl;
         DAGNode n;
         n.id = nodes.size();
         n.priTag = tokenID;
@@ -38,11 +65,13 @@ void DAGOptimizer::removeTag(int tokenID)
 {
     if (vCache.find(tokenID) != vCache.end())
     {
+        printf("Remove tag %s\n", st->getValue(tokenID).name.c_str());
         int nodeID;
-        for (auto rit = vCache[tokenID].rbegin();
-            rit != vCache[tokenID].rend(); ++rit)
+        for (auto rit = vCache[tokenID].begin();
+            rit != vCache[tokenID].end(); ++rit)
         {
             nodeID = *rit;
+            cout << "nodeID: " << nodeID << endl;
             if (tokenID != nodes[nodeID].priTag)
             {
                 for (auto it = nodes[nodeID].secTag.begin();
@@ -50,13 +79,44 @@ void DAGOptimizer::removeTag(int tokenID)
                 {
                     if (*it == tokenID)
                     {
+                        cout << "erase tag " << st->getValue(*it).name
+                            << " for node " << nodeID << endl;
                         nodes[nodeID].secTag.erase(it);
+                        rit = vCache[tokenID].erase(rit);
                         break;
                     }
                 }
+                if (rit == vCache[tokenID].end())
+                            break;
             }
         }
     }
+}
+
+void DAGOptimizer::insertTag(int nodeID, int tag)
+{
+    cout << "Insert tag " << st->getValue(tag).name
+        << " on node " << nodeID << endl;
+    if (st->getValue(nodes[nodeID].priTag).addr == -1)
+    {
+        // switch priTag and secTag
+        nodes[nodeID].secTag.push_back(nodes[nodeID].priTag);
+        nodes[nodeID].priTag = tag;
+    }
+    else
+    {
+        nodes[nodeID].secTag.push_back(tag);
+    }
+    cout << "vCache tag " << st->getValue(tag).name
+        << " for node " << nodeID << endl;
+    vCache[tag].push_back(nodeID);
+    cout << "now vCache[" << st->getValue(tag).name
+        << "] = ";
+    for (auto it = vCache[tag].begin(); it != vCache[tag].end(); ++it)
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
 }
 
 void DAGOptimizer::buildDAG()
@@ -72,26 +132,78 @@ void DAGOptimizer::buildDAG()
         case MUL:
         case MINUS:
         case DIV:
-            // C1 w C2
             if (st->getValue(it->opr1).cat == C &&
                 st->getValue(it->opr2).cat == C)
             {
-                if (isInteger(it->opr1))
+                // C1 w C2
+                TypeTableRecord ttr;
+                int iaddr;
+                int cid;
+                if (isInteger(it->rst))
                 {
                     int c = calcInteger(*it);
-
+                    ttr.tval = INTEGER;
+                    iaddr = ict->entry(c);
+                    cid = st->entry(numToString<int>(c), tt->getID(ttr), C, iaddr);
                 }
                 else if (isFloat(it->opr1))
                 {
                     float c = calcFloat(*it);
+                    ttr.tval = FLOAT;
+                    iaddr = fct->entry(c);
+                    cid = st->entry(numToString<float>(c), tt->getID(ttr), C, iaddr);
                 }
-                break;
+                int cnodeID = insertNode(cid);
+                removeTag(it->rst);
+                insertTag(cnodeID, it->rst);
+            }
+            else
+            {
+                // B w C
+                removeTag(it->rst);
+                int rstnodeID = -1;
+                for (auto nit = nodes.rbegin(); nit != nodes.rend(); ++nit)
+                {
+                    bool f1 = false, f2 = false, f3 = false, f4 = false;
+                    if (nit->op == it->op)
+                    {
+                        // Non-switchable
+                        f1 = find(vCache[it->opr1].begin(), vCache[it->opr1].end(), nit->pl) != vCache[it->opr1].end();
+                        f2 = find(vCache[it->opr2].begin(), vCache[it->opr2].end(), nit->pr) != vCache[it->opr2].end();
+                        // Switchable
+                        f3 = find(vCache[it->opr1].begin(), vCache[it->opr1].end(), nit->pr) != vCache[it->opr1].end();
+                        f4 = find(vCache[it->opr2].begin(), vCache[it->opr2].end(), nit->pl) != vCache[it->opr2].end();
+                        if (((it->op == MINUS || it->op == DIV) && (f1 && f2)) ||
+                            ((it->op == ADD || it->op == MUL) && ((f1 && f2) || (f3 && f4))))
+                        {
+                            rstnodeID = nit->id;
+                            break;
+                        }
+                    }
+                }
+                if (rstnodeID != -1)
+                {
+                    insertTag(rstnodeID, it->rst);
+                }
+                else
+                {
+                    cout << "Insert " << st->getValue(it->rst).name << endl;
+                    DAGNode n;
+                    n.id = nodes.size();
+                    n.op = it->op;
+                    n.priTag = it->rst;
+                    n.pl = nodeID1;
+                    n.pr = nodeID2;
+                    nodes.push_back(n);
+                    vCache[it->rst].push_back(n.id);
+                }
             }
             break;
         case ASSIGN:
             removeTag(it->rst);
-            nodes[nodeID1].secTag.push_back(it->rst);
-            vCache[it->rst].push_back(nodeID1);
+            insertTag(nodeID1, it->rst);
+            break;
+        case BLANK:
             break;
         }
     }
@@ -100,35 +212,77 @@ void DAGOptimizer::buildDAG()
 QuadrupleTable DAGOptimizer::optimize()
 {
     QuadrupleTable new_qt;
+    Quadruple q;
+    for (auto it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        if (it->op != BLANK)
+        {
+            q.op = it->op;
+            q.opr1 = nodes[it->pl].priTag;
+            q.opr2 = nodes[it->pr].priTag;
+            q.rst = it->priTag;
+            new_qt.push_back(q);
+        }
+        if (st->getValue(it->priTag).addr != -1 &&
+            st->getValue(it->priTag).cat == V &&
+            !it->secTag.empty())
+        {
+            for (auto iit = it->secTag.begin(); iit != it->secTag.end(); ++iit)
+            {
+                if (st->getValue(*iit).addr != -1 &&
+                    st->getValue(*iit).cat == V)
+                {
+                    q.op = ASSIGN;
+                    q.opr1 = it->priTag;
+                    q.opr2 = -1;
+                    q.rst = *iit;
+                    new_qt.push_back(q);
+                }
+            }
+        }
+    }
     return new_qt;
 }
 
-int DAGOptimizer::calcInteger(const Quadruple &q) const
+int DAGOptimizer::calcInteger(const Quadruple &q)
 {
+    int x = getIntConst(q.opr1);
+    int y = getIntConst(q.opr2);
     switch (q.op)
     {
     case ADD:
-        return getIntConst(q.opr1) + getIntConst(q.opr2);
+        return x + y;
     case MINUS:
-        return getIntConst(q.opr1) - getIntConst(q.opr2);
+        return x - y;
     case MUL:
-        return getIntConst(q.opr1) * getIntConst(q.opr2);
+        return x * y;
     case DIV:
-        return getIntConst(q.opr1) / getIntConst(q.opr2);
+        return x / y;
+    default:
+        return 0;
     }
 }
 
-float DAGOptimizer::calcFloat(const Quadruple &q) const
+float DAGOptimizer::calcFloat(const Quadruple &q)
 {
+    float x, y;
+    if (isInteger(q.opr1))
+        x = float(getIntConst(q.opr1));
+    else x = getFloatConst(q.opr1);
+    if (isInteger(q.opr2))
+        y = float(getIntConst(q.opr2));
+    else y = getFloatConst(q.opr2);
     switch (q.op)
     {
     case ADD:
-        return getFloatConst(q.opr1) + getFloatConst(q.opr2);
+        return x + y;
     case MINUS:
-        return getFloatConst(q.opr1) - getFloatConst(q.opr2);
+        return x - y;
     case MUL:
-        return getFloatConst(q.opr1) * getFloatConst(q.opr2);
+        return x * y;
     case DIV:
-        return getFloatConst(q.opr1) / getFloatConst(q.opr2);
+        return x / y;
+    default:
+        return 0;
     }
 }

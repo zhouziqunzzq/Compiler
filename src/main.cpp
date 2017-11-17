@@ -9,6 +9,7 @@
 #include "Vall.h"
 #include "QuadrupleTable.h"
 #include "utils.h"
+#include "DAGOptimizer.h"
 using namespace std;
 
 void testScanner(Scanner &sc)
@@ -60,6 +61,9 @@ void printQT(const QuadrupleTable &qt)
         case ASSIGN:
             ops = "ASSIGN";
             break;
+        case BLANK:
+            ops = "BLANK";
+            break;
         }
         printf("(%s, %d, %d, %d)\n", ops.c_str(), it->opr1, it->opr2, it->rst);
     }
@@ -67,7 +71,7 @@ void printQT(const QuadrupleTable &qt)
 
 int main(int argc, char *argv[])
 {
-    string test = "int a = 1.2 + 2 * 3; a = 123.234;\n";//((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
+    string test = "int a, b; int c = a * b; int d = b * a + c;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
@@ -86,10 +90,17 @@ int main(int argc, char *argv[])
     RDAnalyzer ra(&sc, &qt);
 
     testAnalyzer(sc, ra);
+
+    printQT(qt);
+
+    DAGOptimizer optimizer(&qt, &kt, &dt, &cct, &strct, &ict, &fct, &st, &tt);
+    optimizer.print();
     st.print();
     ict.print("IntConstTable");
     fct.print("FloatConstTable");
-    printQT(qt);
+
+    QuadrupleTable new_qt = optimizer.optimize();
+    printQT(new_qt);
 
     return 0;
 }
