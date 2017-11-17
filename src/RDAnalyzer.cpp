@@ -38,6 +38,12 @@ void RDAnalyzer::ASSI()
 
 bool RDAnalyzer::ST()
 {
+	entloop = 0;
+    constflag = 0;
+    constintflag = 0;
+    constfloatflag = 0;
+    intflag = 0;
+    floatflag = 0;
 	Token tmp = sc->getLastToken();
 	if(tmp.type == IDENTIFIER)
 	{
@@ -45,13 +51,15 @@ bool RDAnalyzer::ST()
 		tmp = sc->getLastToken();
 		if(tmp.word == "=")
 		{
-		    //ASSI();
 			sc->next();
+			Token t;
+            sem.push(t);
 			if (opa.E())
             {
                 if (sc->getLastToken().type == DELIMITER &&
                     sc->getLastToken().word == ";")
                 {
+                    ASSI();
                     sc->next();
                     return true;
                 }
@@ -126,9 +134,15 @@ void RDAnalyzer::Ent()
         r.offset = sc->vall->totoffset;
         sc->vall->v.push_back(r);
         sc->vall->totoffset += INTSIZE;
-        sc->st->entryAddr(sc->getLastToken().id,entloop++);
+        //cout <<"!!!!!!!!!!!!" << sc->getLastToken().id << " " << r.offset;
+        sc->st->entryAddr(sc->getLastToken().id,r.offset);
         if(constintflag == 1)
             sc->st->entryCat(sc->getLastToken().id,C);
+        else
+            sc->st->entryCat(sc->getLastToken().id,V);
+
+        sc->st->print();
+        //cout << "!!!!!!!!!!!!!!!!!" << sc->vall->totoffset;
     }
     else if(floatflag == 1)
     {
@@ -137,8 +151,14 @@ void RDAnalyzer::Ent()
         r.offset = sc->vall->totoffset;
         sc->vall->v.push_back(r);
         sc->vall->totoffset += FLOATSIZE;
+        //cout <<"!!!!!!!!!!!!" << sc->getLastToken().id << " " << r.offset;
+        sc->st->entryAddr(sc->getLastToken().id, r.offset);
         if(constfloatflag == 1)
             sc->st->entryCat(sc->getLastToken().id,C);
+        else
+            sc->st->entryCat(sc->getLastToken().id,V);
+
+        sc->st->print();
     }
 }
 
@@ -146,13 +166,15 @@ bool RDAnalyzer::IT()
 {
     if(IFD())
     {
-        Ent();
+        //Ent();
         bool flag = true;
         while(true)
         {
             Token tmp = sc->getLastToken();
+
             if((tmp.type == DELIMITER) && (tmp.word == ","))
             {
+                //Ent();
                 sc->next();
                 if(!IT())
                     flag = false;
@@ -172,6 +194,7 @@ bool RDAnalyzer::IFD()
         Token tmp = sc->getLastToken();
         if(tmp.type == IDENTIFIER)
         {
+            Ent();
             sc->next();
             if(IS())
                 return true;
@@ -197,6 +220,8 @@ bool RDAnalyzer::IS()
 	if((tmp.type == DELIMITER) && (tmp.word == "="))
 	{
 		sc->next();
+		Token t;
+		sem.push(t);
 		return opa.E();
 	}
 	return true;
