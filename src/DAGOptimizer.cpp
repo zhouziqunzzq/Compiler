@@ -3,12 +3,16 @@
 #include "Quadruple.h"
 #include "QuadrupleTable.h"
 #include "Category.h"
+#define isInteger(x) tt->getValue(st->getValue((x)).type).tval == INTEGER
+#define isFloat(x) tt->getValue(st->getValue((x)).type).tval == FLOAT
+#define getIntConst(x) ict->getValue(st->getValue((x)).addr)
+#define getFloatConst(x) fct->getValue(st->getValue((x)).addr)
 using namespace std;
 
 DAGOptimizer::DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
-            SymbolTable *st) : kt(kt), dt(dt), cct(cct),
-        strct(strct), ict(ict), fct(fct), st(st), qt(qt)
+            SymbolTable *st, TypeTable *tt) : kt(kt), dt(dt), cct(cct),
+        strct(strct), ict(ict), fct(fct), st(st), tt(tt), qt(qt)
 {
     buildDAG();
 }
@@ -34,16 +38,21 @@ void DAGOptimizer::removeTag(int tokenID)
 {
     if (vCache.find(tokenID) != vCache.end())
     {
-        int nodeID = vCache[tokenID];
-        if (tokenID != nodes[nodeID].priTag)
+        int nodeID;
+        for (auto rit = vCache[tokenID].rbegin();
+            rit != vCache[tokenID].rend(); ++rit)
         {
-            auto it = nodes[nodeID].secTag.begin();
-            for (; it != nodes[nodeID].secTag.end(); ++it)
+            nodeID = *rit;
+            if (tokenID != nodes[nodeID].priTag)
             {
-                if (*it == tokenID)
+                for (auto it = nodes[nodeID].secTag.begin();
+                    it != nodes[nodeID].secTag.end(); ++it)
                 {
-                    nodes[nodeID].secTag.erase(it);
-                    return;
+                    if (*it == tokenID)
+                    {
+                        nodes[nodeID].secTag.erase(it);
+                        break;
+                    }
                 }
             }
         }
@@ -67,6 +76,15 @@ void DAGOptimizer::buildDAG()
             if (st->getValue(it->opr1).cat == C &&
                 st->getValue(it->opr2).cat == C)
             {
+                if (isInteger(it->opr1))
+                {
+                    int c = calcInteger(*it);
+
+                }
+                else if (isFloat(it->opr1))
+                {
+                    float c = calcFloat(*it);
+                }
                 break;
             }
             break;
@@ -83,4 +101,34 @@ QuadrupleTable DAGOptimizer::optimize()
 {
     QuadrupleTable new_qt;
     return new_qt;
+}
+
+int DAGOptimizer::calcInteger(const Quadruple &q) const
+{
+    switch (q.op)
+    {
+    case ADD:
+        return getIntConst(q.opr1) + getIntConst(q.opr2);
+    case MINUS:
+        return getIntConst(q.opr1) - getIntConst(q.opr2);
+    case MUL:
+        return getIntConst(q.opr1) * getIntConst(q.opr2);
+    case DIV:
+        return getIntConst(q.opr1) / getIntConst(q.opr2);
+    }
+}
+
+float DAGOptimizer::calcFloat(const Quadruple &q) const
+{
+    switch (q.op)
+    {
+    case ADD:
+        return getFloatConst(q.opr1) + getFloatConst(q.opr2);
+    case MINUS:
+        return getFloatConst(q.opr1) - getFloatConst(q.opr2);
+    case MUL:
+        return getFloatConst(q.opr1) * getFloatConst(q.opr2);
+    case DIV:
+        return getFloatConst(q.opr1) / getFloatConst(q.opr2);
+    }
 }

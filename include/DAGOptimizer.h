@@ -27,7 +27,7 @@ class DAGOptimizer
     public:
         DAGOptimizer(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
-            SymbolTable *st);
+            SymbolTable *st, TypeTable *tt);
         QuadrupleTable optimize();
 
     protected:
@@ -40,13 +40,16 @@ class DAGOptimizer
         IntConstTable *ict;
         FloatConstTable *fct;
         SymbolTable *st;
+        TypeTable *tt;
         vector<DAGNode> nodes;
-        map<int, int> vCache;  // cache for judging whether a given variable token id exists
-                                // TokenID -> node.id
+        map<int, vector<int> > vCache;  // cache for judging whether a given variable token id exists
+                                // TokenID -> vector<node.id>
         QuadrupleTable *qt;
         void buildDAG();
         int insertNode(int tokenID);
         void removeTag(int tokenID);
+        int calcInteger(const Quadruple &q) const;
+        float calcFloat(const Quadruple &q) const;
 
 };
 

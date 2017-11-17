@@ -188,17 +188,6 @@ bool OPAnalyzer::E()
         //printf("1. t1: %s, t2: %s\n", t1.word.c_str(), t2.word.c_str());
         if(!f2 && isEnd(getWord(t1)))
             f2 = true;
-        /*if(!f2 && isVN(t2))
-        {
-            printf("t1: %s, t2: %s\n", t1.word.c_str(), t2.word.c_str());
-            printf("getWord(t1): %s, getWord(t2): %s\n", getWord(t1).c_str(), getWord(t2).c_str());
-            st.push(t1);
-            if (v_cat.find(getWord(t1)) != v_cat.end())
-                tst.push(t1);
-            sc->next();
-            t1 = sc->getLastToken();
-            continue;
-        }*/
         map<string, map<string, char> >::iterator it2;
         map<string, char>::iterator it1;
         if (!tst.empty())
