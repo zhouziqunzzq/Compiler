@@ -1,7 +1,9 @@
 #ifndef QUADRUPLE_H_INCLUDED
 #define QUADRUPLE_H_INCLUDED
 
+#include<bits/stdc++.h>
 using namespace std;
+
 enum Operation
 {
     ADD = 0,

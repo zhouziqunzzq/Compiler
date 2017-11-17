@@ -1,11 +1,11 @@
 #include<bits/stdc++.h>
-#include "OPAnalyzer.h"
+#include "../include/OPAnalyzer.h"
 #define isVN(t) v_cat.find(getWord((t))) == v_cat.end()
 #define isVT(t) v_cat.find(getWord((t))) != v_cat.end()
 
 using namespace std;
 
-OPAnalyzer::OPAnalyzer(Scanner *sc) : sc(sc)
+OPAnalyzer::OPAnalyzer(Scanner *sc, stack<Token> *sem, QuadrupleTable *qt) : sc(sc), sem(sem), qt(qt)
 {
     init_mp();
     init_g();
@@ -155,6 +155,49 @@ string OPAnalyzer::getS(Token &t1)
     return res;
 }
 
+bool OPAnalyzer::GEQ(char op)
+{
+	bool flag = true;
+	Operation ope;
+	if(op == '+')
+		ope = ADD;
+	if(op == '-')
+		ope = MINUS;
+	if(op == '*')
+		ope = MUL;
+	if(op == '/')
+		ope = DIV;
+	int opr1, opr2;
+	opr2 = sem->top().id;
+	sem->pop();
+	opr1 = sem->top().id;
+	sem->pop();
+	Tval t1, t2;
+	t1 = sc->tt->getValue(sc->st->getValue(opr1).type).tval;
+	t2 = sc->tt->getValue(sc->st->getValue(opr2).type).tval;
+	TypeTableRecord ttr;
+	if(t1 == FLOAT)
+	{
+		if((t2 == INTEGER) || (t2 == FLOAT))
+			ttr.tval = FLOAT;
+		else flag = false;
+	}
+	else if(t2 == FLOAT)
+	{
+		if((t1 == INTEGER) || (t1 == FLOAT))
+			ttr.tval = FLOAT;
+		else flag = false;
+	}
+	else if((t1 == INTEGER) && (t2 == INTEGER))
+		ttr.tval = INTEGER;
+	else flag = false;
+	if(flag == false) return flag;
+	int rst = sc->st->entry("tmp", sc->tt->getID(ttr), V, -1);
+	Quadruple q(ADD, opr1, opr2, rst);
+	qt->push_back(q);
+	return flag;
+}
+
 bool OPAnalyzer::E()
 {
     while (!st.empty())
@@ -188,17 +231,6 @@ bool OPAnalyzer::E()
         //printf("1. t1: %s, t2: %s\n", t1.word.c_str(), t2.word.c_str());
         if(!f2 && isEnd(getWord(t1)))
             f2 = true;
-        /*if(!f2 && isVN(t2))
-        {
-            printf("t1: %s, t2: %s\n", t1.word.c_str(), t2.word.c_str());
-            printf("getWord(t1): %s, getWord(t2): %s\n", getWord(t1).c_str(), getWord(t2).c_str());
-            st.push(t1);
-            if (v_cat.find(getWord(t1)) != v_cat.end())
-                tst.push(t1);
-            sc->next();
-            t1 = sc->getLastToken();
-            continue;
-        }*/
         map<string, map<string, char> >::iterator it2;
         map<string, char>::iterator it1;
         if (!tst.empty())
@@ -224,6 +256,14 @@ bool OPAnalyzer::E()
                     auto ts = g.find(stmp);
                     if(ts != g.end())
                     {
+						if(stmp.find("+")) flag = GEQ('+');
+						if(stmp.find("-")) flag = GEQ('-');
+						if(stmp.find("*")) flag = GEQ('*');
+						if(stmp.find("/")) flag = GEQ('/');
+						if(flag == false) break;
+						if((stmp == "id") || (stmp == "c"))
+							sem->push(st.top());
+
                         Token to(KEYWORD, g[stmp], -1);
                         printf("g[stmp]: %s\n", g[stmp].c_str());
                         st.push(to);
