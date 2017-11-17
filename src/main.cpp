@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     /*Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
         StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
         SymbolTable *st)*/
-    string test = "float a = ((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
+    string test = "float a = 3; int b = 2 + 3;const int c = 5; int d = 2 , e;\n";//((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
