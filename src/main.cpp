@@ -28,12 +28,39 @@ void testAnalyzer(RDAnalyzer &ra)
     cout << ra.analyze() << endl;
 }
 
+void printQT(const QuadrupleTable &qt)
+{
+    string ops;
+    for (auto it = qt.begin(); it != qt.end(); ++it)
+    {
+        switch(it->op)
+        {
+        case ADD:
+            ops = "ADD";
+            break;
+        case MINUS:
+            ops = "MINUS";
+            break;
+        case MUL:
+            ops = "MUL";
+            break;
+        case DIV:
+            ops = "DIV";
+            break;
+        case ASSIGN:
+            ops = "ASSIGN";
+            break;
+        }
+        printf("(%s, %d, %d, %d)\n", ops.c_str(), it->opr1, it->opr2, it->rst);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     /*Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
         StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
         SymbolTable *st)*/
-    string test = "float a = 3; int b = 2 + 3;const int c = 5; int d = 2 , e;\n";//((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
+    string test = "int a = 1 + 2; int b = a;\n";//((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
@@ -52,6 +79,7 @@ int main(int argc, char *argv[])
     RDAnalyzer ra(&sc, &qt);
 
     testAnalyzer(ra);
+    printQT(qt);
 
     return 0;
 }

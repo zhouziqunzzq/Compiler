@@ -22,13 +22,13 @@ int DAGOptimizer::insertNode(int tokenID)
     if (tokenID < 0)
         return tokenID;
     else if (vCache.find(tokenID) != vCache.end())
-        return vCache[tokenID];
+        return *(vCache[tokenID].end() - 1);
     else
     {
         DAGNode n;
         n.id = nodes.size();
         n.priTag = tokenID;
-        vCache[tokenID] = n.id;
+        vCache[tokenID].push_back(n.id);
         nodes.push_back(n);
         return n.id;
     }
@@ -91,7 +91,7 @@ void DAGOptimizer::buildDAG()
         case ASSIGN:
             removeTag(it->rst);
             nodes[nodeID1].secTag.push_back(it->rst);
-            vCache[it->rst] = nodeID1;
+            vCache[it->rst].push_back(nodeID1);
             break;
         }
     }

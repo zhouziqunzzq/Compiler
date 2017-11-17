@@ -17,7 +17,7 @@ class OPAnalyzer
 		void init_mp();
 		map<string, map<string, char> > mp;
 		string getWord(Token tmp);
-		string getS(Token &t1);
+		string getS(Token &t1, Token &lastToken);
 		stack<Token> st;
 		stack<Token> tst;
 		stack<Token> *sem;

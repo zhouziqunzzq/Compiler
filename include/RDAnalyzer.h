@@ -19,6 +19,7 @@ private:
     bool constfloatflag = 0;
     bool intflag = 0;
     bool floatflag = 0;
+    Token lastIdentifier;
     bool PG();
     bool ST();
     bool VS();

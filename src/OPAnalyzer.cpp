@@ -125,7 +125,7 @@ string OPAnalyzer::getWord(Token tmp)
     return res;
 }
 
-string OPAnalyzer::getS(Token &t1)
+string OPAnalyzer::getS(Token &t1, Token &lastToken)
 {
     Token tmp;
     //st.pop();
@@ -152,6 +152,7 @@ string OPAnalyzer::getS(Token &t1)
         res = getWord(st.top()) + res;
         st.pop();
     }
+    lastToken = tmp;
     return res;
 }
 
@@ -193,7 +194,9 @@ bool OPAnalyzer::GEQ(char op)
 	else flag = false;
 	if(flag == false) return flag;
 	int rst = sc->st->entry("tmp", sc->tt->getID(ttr), V, -1);
-	Quadruple q(ADD, opr1, opr2, rst);
+	Token t(IDENTIFIER, "tmp", rst);
+	sem->push(t);
+	Quadruple q(ope, opr1, opr2, rst);
 	qt->push_back(q);
 	return flag;
 }
@@ -250,19 +253,23 @@ bool OPAnalyzer::E()
                 if(f2 || (!tst.empty() && mp[getWord(vst)][getWord(t1)] == '>'))
                 {
                     printf("Performing reduction...\n");
-                    string stmp = getS(t1);
-                    //printf("stmp: %s\n", stmp.c_str());
+                    Token lastToken;
+                    string stmp = getS(t1, lastToken);
+                    printf("stmp: %s\n", stmp.c_str());
                     //printf("tst: %s\n", tst.empty() ? "empty" : getWord(tst.top()).c_str());
                     auto ts = g.find(stmp);
                     if(ts != g.end())
                     {
-						if(stmp.find("+")) flag = GEQ('+');
-						if(stmp.find("-")) flag = GEQ('-');
-						if(stmp.find("*")) flag = GEQ('*');
-						if(stmp.find("/")) flag = GEQ('/');
+						if(stmp.find("+") != string::npos) flag = GEQ('+');
+						if(stmp.find("-") != string::npos) flag = GEQ('-');
+						if(stmp.find("*") != string::npos) flag = GEQ('*');
+						if(stmp.find("/") != string::npos) flag = GEQ('/');
 						if(flag == false) break;
 						if((stmp == "id") || (stmp == "c"))
-							sem->push(st.top());
+                        {
+                            printf("st.empty: %d\n", st.empty());
+                            sem->push(lastToken);
+                        }
 
                         Token to(KEYWORD, g[stmp], -1);
                         printf("g[stmp]: %s\n", g[stmp].c_str());
