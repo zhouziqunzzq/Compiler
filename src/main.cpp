@@ -10,6 +10,7 @@
 #include "QuadrupleTable.h"
 #include "utils.h"
 #include "DAGOptimizer.h"
+#include "ASMGenerator.h"
 using namespace std;
 
 void testScanner(Scanner &sc)
@@ -65,7 +66,7 @@ void printQT(const QuadrupleTable &qt)
             ops = "BLANK";
             break;
         }
-        printf("(%s, %d, %d, %d)\n", ops.c_str(), it->opr1, it->opr2, it->rst);
+        printf("(%s, %d(%d), %d(%d), %d(%d))\n", ops.c_str(), it->opr1, it->isActive1, it->opr2, it->isActive2, it->rst, it->isActiveR);
     }
 }
 
@@ -102,6 +103,9 @@ int main(int argc, char *argv[])
     QuadrupleTable new_qt = optimizer.optimize();
     printQT(new_qt);
     st.print(true);
+
+    ASMGenerator generator(&new_qt, &kt, &dt, &cct, &strct, &ict, &fct, &st, &tt, &vall);
+    printQT(new_qt);
 
     return 0;
 }

@@ -249,8 +249,11 @@ QuadrupleTable DAGOptimizer::optimize()
 void DAGOptimizer::enableTemp(vector<SymbolTableRecord> &t, int id)
 {
     t[id].isUsed = true;
-    t[id].isTemp = t[id].addr == -1;
-    if (t[id].isTemp)
+    if (!t[id].isTemp)
+    {
+        t[id].isTemp = (t[id].addr == -1);
+    }
+    if (t[id].addr == -1 && t[id].isTemp)
     {
         VallRecord r;
         r.offset = vall->totoffset;
