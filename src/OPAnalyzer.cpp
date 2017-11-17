@@ -1,11 +1,13 @@
 #include<bits/stdc++.h>
-#include "../include/OPAnalyzer.h"
+#include "OPAnalyzer.h"
+#include "utils.h"
 #define isVN(t) v_cat.find(getWord((t))) == v_cat.end()
 #define isVT(t) v_cat.find(getWord((t))) != v_cat.end()
+#define TMPPREFIX "tmp"
 
 using namespace std;
 
-OPAnalyzer::OPAnalyzer(Scanner *sc, stack<Token> *sem, QuadrupleTable *qt) : sc(sc), sem(sem), qt(qt)
+OPAnalyzer::OPAnalyzer(Scanner *sc, stack<Token> *sem, QuadrupleTable *qt) : sc(sc), sem(sem), qt(qt), tmpCnt(0)
 {
     init_mp();
     init_g();
@@ -128,14 +130,11 @@ string OPAnalyzer::getWord(Token tmp)
 string OPAnalyzer::getS(Token &t1, Token &lastToken)
 {
     Token tmp;
-    //st.pop();
-    //printf("tmp: %s\n", getWord(tmp).c_str());
     Token tmptst = t1;
     string res;
     while(!tst.empty() && mp[getWord(tst.top())][getWord(tmptst)] != '<')
     {
         tmp = st.top();
-        //st.pop();
         res = getWord(tmp) + res;
         if (isVT(tmp) && tmp == tst.top())
         {
@@ -147,7 +146,7 @@ string OPAnalyzer::getS(Token &t1, Token &lastToken)
     }
     // Pop out remaining VN in st
     while (!st.empty() && (isVN(st.top()) ||
-            getWord(st.top()) != getWord(tst.top())))
+                           getWord(st.top()) != getWord(tst.top())))
     {
         res = getWord(st.top()) + res;
         st.pop();
@@ -156,52 +155,129 @@ string OPAnalyzer::getS(Token &t1, Token &lastToken)
     return res;
 }
 
-bool OPAnalyzer::GEQ(char op)
+string OPAnalyzer::getTmpName()
 {
-	bool flag = true;
-	Operation ope;
-	if(op == '+')
-		ope = ADD;
-	if(op == '-')
-		ope = MINUS;
-	if(op == '*')
-		ope = MUL;
-	if(op == '/')
-		ope = DIV;
-	int opr1, opr2;
-	opr2 = sem->top().id;
-	sem->pop();
-	opr1 = sem->top().id;
-	sem->pop();
-	Tval t1, t2;
-	t1 = sc->tt->getValue(sc->st->getValue(opr1).type).tval;
-	t2 = sc->tt->getValue(sc->st->getValue(opr2).type).tval;
-	TypeTableRecord ttr;
-	if(t1 == FLOAT)
-	{
-		if((t2 == INTEGER) || (t2 == FLOAT))
-			ttr.tval = FLOAT;
-		else flag = false;
-	}
-	else if(t2 == FLOAT)
-	{
-		if((t1 == INTEGER) || (t1 == FLOAT))
-			ttr.tval = FLOAT;
-		else flag = false;
-	}
-	else if((t1 == INTEGER) && (t2 == INTEGER))
-		ttr.tval = INTEGER;
-	else flag = false;
-	if(flag == false) return flag;
-	int rst = sc->st->entry("tmp", sc->tt->getID(ttr), V, -1);
-	Token t(IDENTIFIER, "tmp", rst);
-	sem->push(t);
-	Quadruple q(ope, opr1, opr2, rst);
-	qt->push_back(q);
-	return flag;
+    SymbolTableRecord str;
+    do
+    {
+        str.name = TMPPREFIX + numToString<int>(tmpCnt++);
+    }
+    while (sc->st->has(str));
+    return str.name;
 }
 
-bool OPAnalyzer::E()
+bool OPAnalyzer::GEQ(char op)
+{
+    bool flag = true;
+    Operation ope;
+    if(op == '+')
+        ope = ADD;
+    if(op == '-')
+        ope = MINUS;
+    if(op == '*')
+        ope = MUL;
+    if(op == '/')
+        ope = DIV;
+    int opr1, opr2;
+    opr2 = sem->top().id;
+    sem->pop();
+    opr1 = sem->top().id;
+    sem->pop();
+    Tval t1, t2;
+    t1 = getTval(opr1);
+    t2 = getTval(opr2);
+    TypeTableRecord ttr;
+    if(t1 == FLOAT)
+    {
+        if((t2 == INTEGER) || (t2 == FLOAT))
+            ttr.tval = FLOAT;
+        else flag = false;
+    }
+    else if(t2 == FLOAT)
+    {
+        if((t1 == INTEGER) || (t1 == FLOAT))
+            ttr.tval = FLOAT;
+        else flag = false;
+    }
+    else if((t1 == INTEGER) && (t2 == INTEGER))
+        ttr.tval = INTEGER;
+    else flag = false;
+    if(flag == false) return flag;
+    string tname = getTmpName();
+    int rst = sc->st->entry(tname, sc->tt->getID(ttr), V, -1);
+    Token t(IDENTIFIER, tname, rst);
+    sem->push(t);
+    Quadruple q(ope, opr1, opr2, rst);
+    qt->push_back(q);
+    return flag;
+}
+
+bool OPAnalyzer::CALC(char op)
+{
+    Operation ope;
+    if(op == '+')
+        ope = ADD;
+    if(op == '-')
+        ope = MINUS;
+    if(op == '*')
+        ope = MUL;
+    if(op == '/')
+        ope = DIV;
+    int opr1, opr2;
+    opr2 = sem->top().id;
+    sem->pop();
+    opr1 = sem->top().id;
+    sem->pop();
+    if (sc->st->getValue(opr1).cat != C ||
+            sc->st->getValue(opr2).cat != C)    // not a const expression
+        return false;
+    Tval t1, t2;
+    t1 = getTval(opr1);
+    t2 = getTval(opr2);
+    TypeTableRecord ttr;
+    if(t1 == FLOAT)
+    {
+        if((t2 == INTEGER) || (t2 == FLOAT))
+            ttr.tval = FLOAT;
+        else return false;
+    }
+    else if(t2 == FLOAT)
+    {
+        if((t1 == INTEGER) || (t1 == FLOAT))
+            ttr.tval = FLOAT;
+        else return false;
+    }
+    else if((t1 == INTEGER) && (t2 == INTEGER))
+        ttr.tval = INTEGER;
+    else return false;
+    int rst;
+    if (ttr.tval == INTEGER)
+    {
+        int i = calcConstResult(ope, getIntVal(opr1), getIntVal(opr2));
+        int iaddr = sc->ict->entry(i);
+        rst = sc->st->entry(numToString<int>(i), sc->tt->getID(ttr), C, iaddr);
+        Token t(INTCONST, numToString<int>(i), rst);
+        sem->push(t);
+    }
+    else if (ttr.tval == FLOAT)
+    {
+        float i;
+        if (t1 == FLOAT && t2 == FLOAT)
+            i = calcConstResult(ope, getFloatVal(opr1), getFloatVal(opr2));
+        else if (t1 == INTEGER)
+            i = calcConstResult(ope, getIntVal(opr1), getFloatVal(opr2));
+        else
+            i = calcConstResult(ope, getFloatVal(opr1), getIntVal(opr2));
+        int iaddr = sc->fct->entry(i);
+        rst = sc->st->entry(numToString<float>(i), sc->tt->getID(ttr), C, iaddr);
+        Token t(FLOATCONST, numToString<float>(i), rst);
+        sem->push(t);
+    }
+    else return false;
+    return true;
+}
+
+bool OPAnalyzer::E(bool isConstDef)
 {
     while (!st.empty())
         st.pop();
@@ -230,8 +306,6 @@ bool OPAnalyzer::E()
     while(true)
     {
         t2 = st.top();
-        //st.pop();
-        //printf("1. t1: %s, t2: %s\n", t1.word.c_str(), t2.word.c_str());
         if(!f2 && isEnd(getWord(t1)))
             f2 = true;
         map<string, map<string, char> >::iterator it2;
@@ -246,7 +320,6 @@ bool OPAnalyzer::E()
             if (!tst.empty())
             {
                 it1 = mp[getWord(vst)].find(getWord(t1));
-                //printf("2. t1: %s, t2: %s, vst: %s\n", t1.word.c_str(), t2.word.c_str(), vst.word.c_str());
             }
             if (f2 || tst.empty() || it1 != mp[getWord(vst)].end())
             {
@@ -256,25 +329,34 @@ bool OPAnalyzer::E()
                     Token lastToken;
                     string stmp = getS(t1, lastToken);
                     printf("stmp: %s\n", stmp.c_str());
-                    //printf("tst: %s\n", tst.empty() ? "empty" : getWord(tst.top()).c_str());
                     auto ts = g.find(stmp);
                     if(ts != g.end())
                     {
-						if(stmp.find("+") != string::npos) flag = GEQ('+');
-						if(stmp.find("-") != string::npos) flag = GEQ('-');
-						if(stmp.find("*") != string::npos) flag = GEQ('*');
-						if(stmp.find("/") != string::npos) flag = GEQ('/');
-						if(flag == false) break;
-						if((stmp == "id") || (stmp == "c"))
+                        if (!isConstDef)
                         {
-                            printf("st.empty: %d\n", st.empty());
+                            if(stmp.find("+") != string::npos) flag = GEQ('+');
+                            if(stmp.find("-") != string::npos) flag = GEQ('-');
+                            if(stmp.find("*") != string::npos) flag = GEQ('*');
+                            if(stmp.find("/") != string::npos) flag = GEQ('/');
+                            if(flag == false) break;
+                        }
+                        else
+                        {
+                            if(stmp.find("+") != string::npos) flag = CALC('+');
+                            if(stmp.find("-") != string::npos) flag = CALC('-');
+                            if(stmp.find("*") != string::npos) flag = CALC('*');
+                            if(stmp.find("/") != string::npos) flag = CALC('/');
+                            if(flag == false) break;
+                        }
+
+                        if((stmp == "id") || (stmp == "c"))
+                        {
                             sem->push(lastToken);
                         }
 
                         Token to(KEYWORD, g[stmp], -1);
                         printf("g[stmp]: %s\n", g[stmp].c_str());
                         st.push(to);
-                        //printf("st.top: %s\n", getWord(st.top()).c_str());
                     }
                     else flag = false;
                 }
@@ -305,8 +387,6 @@ bool OPAnalyzer::E()
                 break;
             }
         }
-        //printf("3. t1: %s, t2: %s, st.top: %s\n", t1.word.c_str(), t2.word.c_str(), getWord(st.top()).c_str());
-        //st.pop();
     }
     printf("OPAnalyzer::flag = %d\n", flag);
     return flag;

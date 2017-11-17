@@ -31,6 +31,11 @@ const Token& Scanner::getLastToken() const
     return lastToken;
 }
 
+const size_t& Scanner::getCurIndex() const
+{
+    return curIndex;
+}
+
 void Scanner::reset()
 {
     buffer.clear();
@@ -53,9 +58,6 @@ void Scanner::next()
     while (curIndex != content.length() &&
             !(curState == 1 && lastState != 1))
     {
-        //cout << "curState: " << curState << endl;
-        //cout << "length: " << content.length() << endl;
-        //cout << "curIndex: " << curIndex << endl;
         lastState = curState;
         char c = content[curIndex++];
         buffer += c;
@@ -79,15 +81,6 @@ void Scanner::next()
     }
     if (curIndex == content.length())
         isEnd = true;
-}
-
-template <class Type>
-Type stringToNum(const string& str)
-{
-    istringstream iss(str);
-    Type num;
-    iss >> num;
-    return num;
 }
 
 void Scanner::handleEmpty()

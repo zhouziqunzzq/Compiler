@@ -13,7 +13,6 @@ int SymbolTable::entry(string n, int t, Category c, int a)
 
 void SymbolTable::entryType(int id, int t)
 {
-    //cout << "entryType: " << id << " " << t << endl;
     table[id].type = t;
 }
 
@@ -24,18 +23,17 @@ void SymbolTable::entryCat(int id, Category c)
 
 void SymbolTable::entryAddr(int id, int a)
 {
-    cout << "entryAddr: " << id << " " << a << endl;
     table[id].addr = a;
 }
 
 void SymbolTable::print()
 {
-    cout << "============================" << endl;
-    cout << "         SymbolTable        " << endl;
-    cout << "============================" << endl;
-    cout << "Name\tType\tCat\tAddr" << endl;
+    cout << "====================================" << endl;
+    cout << "             SymbolTable            " << endl;
+    cout << "====================================" << endl;
+    cout << "ID\tName\tType\tCat\tAddr" << endl;
     auto it = table.begin();
-    for (; it != table.end(); ++it)
-        printf("%s\t%d\t%d\t%d\n", it->name.c_str(),
+    for (int i = 0; it != table.end(); ++it, ++i)
+        printf("%d\t%s\t%d\t%d\t%d\n", i, it->name.c_str(),
                it->type, it->cat, it->addr);
 }

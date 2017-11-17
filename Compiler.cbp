@@ -50,6 +50,7 @@
 		<Unit filename="include/Token.h" />
 		<Unit filename="include/TypeTable.h" />
 		<Unit filename="include/Vall.h" />
+		<Unit filename="include/utils.h" />
 		<Unit filename="src/DAGOptimizer.cpp" />
 		<Unit filename="src/DelimiterTable.cpp" />
 		<Unit filename="src/KeywordTable.cpp" />
@@ -61,6 +62,7 @@
 		<Unit filename="src/Token.cpp" />
 		<Unit filename="src/TypeTable.cpp" />
 		<Unit filename="src/main.cpp" />
+		<Unit filename="src/utils.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

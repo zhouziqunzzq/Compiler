@@ -8,6 +8,7 @@
 #include "RDAnalyzer.h"
 #include "Vall.h"
 #include "QuadrupleTable.h"
+#include "utils.h"
 using namespace std;
 
 void testScanner(Scanner &sc)
@@ -23,9 +24,16 @@ void testScanner(Scanner &sc)
     }
 }
 
-void testAnalyzer(RDAnalyzer &ra)
+void testAnalyzer(Scanner &sc, RDAnalyzer &ra)
 {
-    cout << ra.analyze() << endl;
+    bool flag = ra.analyze();
+    if (!flag)
+    {
+        printf("ERROR: Invalid token \"%s\" found at position %d.\n",
+               sc.getLastToken().word.c_str(), sc.getCurIndex());
+    }
+    else
+        printf("OK.\n");
 }
 
 void printQT(const QuadrupleTable &qt)
@@ -57,10 +65,7 @@ void printQT(const QuadrupleTable &qt)
 
 int main(int argc, char *argv[])
 {
-    /*Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
-        StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
-        SymbolTable *st)*/
-    string test = "int a = 1 + 2; int b = a;\n";//((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
+    string test = "const int a = 2.333 + 3.222;\n";//((1+2)*3)/1e4; a = 3 + x / 3.14;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
@@ -78,7 +83,10 @@ int main(int argc, char *argv[])
     QuadrupleTable qt;
     RDAnalyzer ra(&sc, &qt);
 
-    testAnalyzer(ra);
+    testAnalyzer(sc, ra);
+    st.print();
+    ict.print("IntConstTable");
+    fct.print("FloatConstTable");
     printQT(qt);
 
     return 0;

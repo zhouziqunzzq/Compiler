@@ -4,7 +4,8 @@
 #include "Scanner.h"
 #include "OPAnalyzer.h"
 #include "QuadrupleTable.h"
-#include "stack"
+#include "utils.h"
+#include <stack>
 
 class RDAnalyzer
 {
@@ -33,7 +34,8 @@ private:
     bool GF();
     void Ent();
     void Typ(Token tmp);
-    void ASSI();
+    bool ASSI();
+    void INITFLAG();
 
 public:
     RDAnalyzer(Scanner *sc, QuadrupleTable *qt);

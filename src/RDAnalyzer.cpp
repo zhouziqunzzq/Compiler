@@ -26,34 +26,88 @@ bool RDAnalyzer::PG()
     return true;
 }
 
-void RDAnalyzer::ASSI()
+void RDAnalyzer::INITFLAG()
 {
-    cout << "ASSI" << endl;
-    Quadruple qd(ASSIGN, sem.top().id, -1, lastIdentifier.id);
-    qt->push_back(qd);
-    sem.pop();
-}
-
-bool RDAnalyzer::ST()
-{
-	entloop = 0;
+    entloop = 0;
     constflag = 0;
     constintflag = 0;
     constfloatflag = 0;
     intflag = 0;
     floatflag = 0;
+}
+
+bool RDAnalyzer::ASSI()
+{
+    bool flag = true;
+    if (constflag)
+    {
+        // Const, just skip the ASSI quadruple generation
+        // and edit addr in SymbolTable
+        if (getTval(sem.top().id) == INTEGER)
+        {
+            int iaddr = sc->ict->entry(getIntVal(sem.top().id));
+            if (floatflag)
+            {
+                float i = float(getIntVal(sem.top().id));
+                iaddr = sc->fct->entry(i);
+                TypeTableRecord ttr;
+                ttr.tval = FLOAT;
+                sc->st->entryType(sem.top().id, sc->tt->getID(ttr));
+                sc->st->entryAddr(sem.top().id, iaddr);
+            }
+            else if (intflag)
+            {
+                sc->st->entryAddr(sem.top().id, iaddr);
+            }
+            else flag = false;
+        }
+        else if (getTval(sem.top().id) == FLOAT)
+        {
+            int iaddr = sc->fct->entry(getFloatVal(sem.top().id));
+            if (intflag)
+            {
+                int i = int(getFloatVal(sem.top().id));
+                iaddr = sc->ict->entry(i);
+                TypeTableRecord ttr;
+                ttr.tval = INTEGER;
+                sc->st->entryType(sem.top().id, sc->tt->getID(ttr));
+                sc->st->entryAddr(sem.top().id, iaddr);
+            }
+            else if (floatflag)
+            {
+                sc->st->entryAddr(sem.top().id, iaddr);
+            }
+            else flag = false;
+        }
+    }
+    else
+    {
+        Quadruple qd(ASSIGN, sem.top().id, -1, lastIdentifier.id);
+        qt->push_back(qd);
+    }
+    sem.pop();
+    return flag;
+}
+
+bool RDAnalyzer::ST()
+{
+	INITFLAG();
 	Token tmp = sc->getLastToken();
 	if(tmp.type == IDENTIFIER)
 	{
+	    // Check if the identifier has been defined
+	    if (sc->st->getValue(tmp.id).addr == -1)
+            return false;
 	    lastIdentifier = tmp;
 		sc->next();
 		tmp = sc->getLastToken();
 		if(tmp.word == "=")
 		{
 			sc->next();
-			if (opa.E())
+			if (opa.E(constflag))
             {
-                ASSI();
+                if (!ASSI())
+                    return false;
                 if (sc->getLastToken().type == DELIMITER &&
                     sc->getLastToken().word == ";")
                 {
@@ -122,9 +176,11 @@ bool RDAnalyzer::TP()
 
 void RDAnalyzer::Ent()
 {
+    TypeTableRecord ttr;
     if(intflag == 1)
     {
-        sc->st->entryType(sc->getLastToken().id,1);
+        ttr.tval = INTEGER;
+        sc->st->entryType(sc->getLastToken().id, sc->tt->getID(ttr));
         VallRecord r;
         r.offset = sc->vall->totoffset;
         sc->vall->v.push_back(r);
@@ -135,11 +191,11 @@ void RDAnalyzer::Ent()
         else
             sc->st->entryCat(sc->getLastToken().id,V);
 
-        sc->st->print();
     }
     else if(floatflag == 1)
     {
-        sc->st->entryType(sc->getLastToken().id,2);
+        ttr.tval = FLOAT;
+        sc->st->entryType(sc->getLastToken().id, sc->tt->getID(ttr));
         VallRecord r;
         r.offset = sc->vall->totoffset;
         sc->vall->v.push_back(r);
@@ -150,7 +206,6 @@ void RDAnalyzer::Ent()
         else
             sc->st->entryCat(sc->getLastToken().id,V);
 
-        sc->st->print();
     }
 }
 
@@ -161,7 +216,8 @@ bool RDAnalyzer::IT()
         bool flag = true;
         while(true)
         {
-            ASSI();
+            if (!ASSI())
+                return false;
             Token tmp = sc->getLastToken();
             if((tmp.type == DELIMITER) && (tmp.word == ","))
             {
@@ -211,7 +267,7 @@ bool RDAnalyzer::IS()
 	if((tmp.type == DELIMITER) && (tmp.word == "="))
 	{
 		sc->next();
-		return opa.E();
+		return opa.E(constflag);
 	}
 	return true;
 }

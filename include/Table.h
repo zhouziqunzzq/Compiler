@@ -17,6 +17,7 @@ public:
     const T& getValue(int id) const;
     int getID(T v);
     bool has(T v);
+    void print(string name);
 };
 
 template<class T>
@@ -49,6 +50,18 @@ template<class T>
 bool Table<T>::has(T v)
 {
     return index.find(v) != index.end();
+}
+
+template <class T>
+void Table<T>::print(string name)
+{
+    cout << "====================================" << endl;
+    cout << "        " << name << "              " << endl;
+    cout << "====================================" << endl;
+    cout << "ID\tValue" << endl;
+    auto it = table.begin();
+    for (int i = 0; it != table.end(); ++it, ++i)
+        cout << i << "\t" << *it << endl;
 }
 
 #endif

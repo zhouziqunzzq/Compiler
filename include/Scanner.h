@@ -9,6 +9,7 @@
 #include "StateChangeTable.h"
 #include "Vall.h"
 #include "TypeTable.h"
+#include "utils.h"
 #include <string>
 using namespace std;
 
@@ -31,6 +32,7 @@ public:
     TypeTable *tt;
     void next();
     const Token& getLastToken() const;
+    const size_t& getCurIndex() const;
 
 protected:
 
