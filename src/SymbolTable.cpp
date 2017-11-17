@@ -13,6 +13,7 @@ int SymbolTable::entry(string n, int t, Category c, int a)
 
 void SymbolTable::entryType(int id, int t)
 {
+    //cout << "entryType: " << id << " " << t << endl;
     table[id].type = t;
 }
 
@@ -23,6 +24,7 @@ void SymbolTable::entryCat(int id, Category c)
 
 void SymbolTable::entryAddr(int id, int a)
 {
+    cout << "entryAddr: " << id << " " << a << endl;
     table[id].addr = a;
 }
 

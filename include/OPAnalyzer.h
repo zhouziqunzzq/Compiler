@@ -4,6 +4,9 @@
 #include<bits/stdc++.h>
 #include "Token.h"
 #include "Scanner.h"
+#include "Quadruple.h"
+#include "QuadrupleTable.h"
+#include "TypeTable.h"
 
 using namespace std;
 
@@ -17,6 +20,8 @@ class OPAnalyzer
 		string getS(Token &t1);
 		stack<Token> st;
 		stack<Token> tst;
+		stack<Token> *sem;
+		QuadrupleTable *qt;
 		struct cmp
 		{
 			bool operator()(const string &s1, const string &s2) const
@@ -53,10 +58,11 @@ class OPAnalyzer
 		void init_vcat();
 		map<string, bool> v_cat;
         bool isEnd(string s);
+		bool GEQ(char op);
 
 	public:
 		bool E();
-		OPAnalyzer(Scanner *sc);
+		OPAnalyzer(Scanner *sc, stack<Token> *sem, QuadrupleTable *qt);
 };
 
 #endif

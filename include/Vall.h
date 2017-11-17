@@ -16,6 +16,10 @@ struct Vall
 {
 	vector<VallRecord> v;
 	int totoffset;
+	Vall()
+	{
+	    totoffset = 0;
+	}
 };
 
 #endif
