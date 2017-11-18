@@ -72,7 +72,29 @@ void printQT(const QuadrupleTable &qt)
 
 int main(int argc, char *argv[])
 {
-    string test = "int a, b, c; a = 1; b = 2; c = a + b;\n";
+    string filename;
+    if (argc != 2)
+    {
+        cout << "Invalid filename" << endl;
+        return 0;
+    }
+    else
+    {
+        filename = argv[1];
+    }
+
+    ifstream in(filename, ios::in);
+    if (!in)
+    {
+        cout << "Failed to open file" << endl;
+        return 0;
+    }
+    istreambuf_iterator<char> beg(in), end;
+    string buffer(beg, end);
+    in.close();
+    buffer += "\n";
+
+    //string test = "int a, b, c; a = 1; b = 2; c = a + b;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
@@ -82,7 +104,7 @@ int main(int argc, char *argv[])
     SymbolTable st;
     Vall vall;
     TypeTable tt;
-    Scanner sc(test, &kt, &dt, &cct, &strct, &ict, &fct, &st, &vall, &tt);
+    Scanner sc(buffer, &kt, &dt, &cct, &strct, &ict, &fct, &st, &vall, &tt);
 
     //testScanner(sc);
     //st.print();
@@ -90,23 +112,34 @@ int main(int argc, char *argv[])
     QuadrupleTable qt;
     RDAnalyzer ra(&sc, &qt);
 
+    cout << "\n\n\n";
+    cout << "Starting Grammar Analyzer..." << endl;
     testAnalyzer(sc, ra);
 
+    cout << "\n\n\n";
+    cout << "Printing unoptimized Quadruples..." << endl;
     printQT(qt);
 
+    cout << "\n\n\n";
+    cout << "Optimizing Quadruples..." << endl;
     DAGOptimizer optimizer(&qt, &kt, &dt, &cct, &strct, &ict, &fct, &st, &tt, &vall);
     optimizer.print();
     st.print(false);
     ict.print("IntConstTable");
     fct.print("FloatConstTable");
 
+    cout << "\n\n\n";
+    cout << "Printing optimized Quadruples..." << endl;
     QuadrupleTable new_qt = optimizer.optimize();
     printQT(new_qt);
     st.print(true);
 
+    cout << "\n\n\n";
+    cout << "Generating ASM code..." << endl;
     ASMGenerator generator(&new_qt, &kt, &dt, &cct, &strct, &ict, &fct, &st, &tt, &vall);
-    printQT(new_qt);
 
+    cout << "\n\n\n";
+    cout << "ASM code:" << endl;
     cout << generator.gen();
 
     return 0;

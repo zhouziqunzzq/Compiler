@@ -43,10 +43,11 @@ void ASMGenerator::fillActiveInfo()
 
 void ASMGenerator::genHeader()
 {
+    int cnt = 0;
     obj.push_back("DSEG\tSEGMENT");
     for (auto it = vall->v.begin(); it != vall->v.end(); ++it)
     {
-        obj.push_back("DATA\tDB\t0");
+        obj.push_back("DATA" + numToString<int>(cnt++) + "\tDB\t0");
     }
     obj.push_back("DSEG\tENDS");
 

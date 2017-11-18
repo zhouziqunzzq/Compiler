@@ -225,7 +225,8 @@ QuadrupleTable DAGOptimizer::optimize()
             new_qt.push_back(q);
         }
         if (st->getValue(it->priTag).addr != -1 &&
-            st->getValue(it->priTag).cat == V &&
+            (st->getValue(it->priTag).cat == V ||
+             st->getValue(it->priTag).cat == C) &&
             !it->secTag.empty())
         {
             for (auto iit = it->secTag.begin(); iit != it->secTag.end(); ++iit)

@@ -34,6 +34,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/ASMGenerator.h" />
 		<Unit filename="include/Category.h" />
 		<Unit filename="include/ConstTable.h" />
 		<Unit filename="include/DAGOptimizer.h" />
@@ -51,6 +52,7 @@
 		<Unit filename="include/TypeTable.h" />
 		<Unit filename="include/Vall.h" />
 		<Unit filename="include/utils.h" />
+		<Unit filename="src/ASMGenerator.cpp" />
 		<Unit filename="src/DAGOptimizer.cpp" />
 		<Unit filename="src/DelimiterTable.cpp" />
 		<Unit filename="src/KeywordTable.cpp" />
