@@ -107,5 +107,7 @@ int main(int argc, char *argv[])
     ASMGenerator generator(&new_qt, &kt, &dt, &cct, &strct, &ict, &fct, &st, &tt, &vall);
     printQT(new_qt);
 
+    cout << generator.gen();
+
     return 0;
 }
