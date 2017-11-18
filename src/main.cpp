@@ -72,7 +72,7 @@ void printQT(const QuadrupleTable &qt)
 
 int main(int argc, char *argv[])
 {
-    string test = "int a, b = 1 + 2 + 3; int c = a * b + b; int d = b * a + 3.2;\n";
+    string test = "int a, b, c; a = 1; b = 2; c = a + b;\n";
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;

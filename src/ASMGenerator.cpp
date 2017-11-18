@@ -184,6 +184,11 @@ void ASMGenerator::genBody()
             rdlActive = it->isActiveR;
         }
     }
+    // Store rdl if needed
+    if (rdlActive)
+    {
+        genST(rdl);
+    }
 }
 
 void ASMGenerator::genFooter()
