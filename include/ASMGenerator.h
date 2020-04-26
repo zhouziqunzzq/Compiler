@@ -12,12 +12,12 @@
 #include "TypeTable.h"
 #include "utils.h"
 
-class ASMGenerator
-{
+class ASMGenerator {
 public:
     ASMGenerator(QuadrupleTable *qt, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
                  StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
                  SymbolTable *st, TypeTable *tt, Vall *vall);
+
     string gen();
 
 protected:
@@ -40,11 +40,17 @@ private:
     string opcode[10];
 
     void fillActiveInfo();
+
     void genHeader();
+
     void genBody();
+
     void genMOV(int id);
+
     void genST(int id);
+
     void genOP(int op, int id);
+
     void genFooter();
 };
 

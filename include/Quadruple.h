@@ -2,10 +2,10 @@
 #define QUADRUPLE_H_INCLUDED
 
 #include<bits/stdc++.h>
+
 using namespace std;
 
-enum Operation
-{
+enum Operation {
     BLANK = -1,
     ADD = 0,
     MINUS = 1,
@@ -14,8 +14,7 @@ enum Operation
     ASSIGN = 4
 };
 
-struct Quadruple
-{
+struct Quadruple {
     Operation op;
     int opr1;
     bool isActive1;
@@ -25,9 +24,10 @@ struct Quadruple
     bool isActiveR;
 
     Quadruple(Operation op, int opr1, int opr2, int rst) :
-        op(op), opr1(opr1), isActive1(false),
-        opr2(opr2), isActive2(false),
-        rst(rst), isActiveR(false) {}
+            op(op), opr1(opr1), isActive1(false),
+            opr2(opr2), isActive2(false),
+            rst(rst), isActiveR(false) {}
+
     Quadruple() {}
 };
 

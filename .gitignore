@@ -1,4 +1,8 @@
+.idea/
+cmake-build-*/
+
 bin/
 obj/
 *.depend
 *.layout
+

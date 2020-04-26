@@ -1,9 +1,9 @@
 #include<bits/stdc++.h>
 #include "StateChangeTable.h"
+
 using namespace std;
 
-StateChangeTable::StateChangeTable()
-{
+StateChangeTable::StateChangeTable() {
     // Node 1
     table[1]['\n'] = table[1]['\r'] = table[1]['\t'] = table[1][' '] = 1;
     table[1]['\''] = 5;
@@ -67,48 +67,41 @@ StateChangeTable::StateChangeTable()
     fillNumber(27, 27);
 }
 
-bool StateChangeTable::hasNextState(int curState, char curChar)
-{
+bool StateChangeTable::hasNextState(int curState, char curChar) {
     return table[curState].find(curChar) != table[curState].end();
 }
 
-int StateChangeTable::getNextState(int curState, char curChar)
-{
+int StateChangeTable::getNextState(int curState, char curChar) {
     return table[curState][curChar];
 }
 
-void StateChangeTable::fillAlphabet(int s, int i)
-{
+void StateChangeTable::fillAlphabet(int s, int i) {
     for (int j = 'a'; j <= 'z'; ++j)
         table[s][char(j)] = i;
     for (int j = 'A'; j <= 'Z'; ++j)
         table[s][char(j)] = i;
 }
 
-void StateChangeTable::fillNumber(int s, int i)
-{
+void StateChangeTable::fillNumber(int s, int i) {
     for (int j = '0'; j <= '9'; ++j)
         table[s][char(j)] = i;
 }
 
-void StateChangeTable::fillSingleDelimiter(int s, int i)
-{
+void StateChangeTable::fillSingleDelimiter(int s, int i) {
     const int MAXD = 12;
     char d[MAXD] = {'+', '-', '*', ',', '.', '(', ')', '[', ']', '{', '}', ';'};
     for (int j = 0; j < MAXD; ++j)
         table[s][d[j]] = i;
 }
 
-void StateChangeTable::fillDoubleDelimiter(int s, int i)
-{
+void StateChangeTable::fillDoubleDelimiter(int s, int i) {
     const int MAXD = 6;
     char d[MAXD] = {'>', '<', '=', '!', '&', '|'};
     for (int j = 0; j < MAXD; ++j)
         table[s][d[j]] = i;
 }
 
-void StateChangeTable::fillAll(int s, int i)
-{
+void StateChangeTable::fillAll(int s, int i) {
     for (int j = 0; j < 256; ++j)
         table[s][char(j)] = i;
 }

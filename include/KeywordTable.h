@@ -3,10 +3,10 @@
 
 #include<string>
 #include "Table.h"
+
 using namespace std;
 
-class KeywordTable : public Table<string>
-{
+class KeywordTable : public Table<string> {
 public:
     KeywordTable();
 };

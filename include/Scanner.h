@@ -11,16 +11,18 @@
 #include "TypeTable.h"
 #include "utils.h"
 #include <string>
+
 using namespace std;
 
-class Scanner
-{
+class Scanner {
     typedef void(Scanner::*HandleFuncPtr)();
+
     typedef map<int, HandleFuncPtr> HandleFuncTable;
 public:
     Scanner(string s, KeywordTable *kt, DelimiterTable *dt, CharConstTable *cct,
             StrConstTable *strct, IntConstTable *ict, FloatConstTable *fct,
             SymbolTable *st, Vall *vall, TypeTable *tt);
+
     KeywordTable *kt;
     DelimiterTable *dt;
     CharConstTable *cct;
@@ -30,9 +32,12 @@ public:
     SymbolTable *st;
     Vall *vall;
     TypeTable *tt;
+
     void next();
-    const Token& getLastToken() const;
-    const size_t& getCurIndex() const;
+
+    const Token &getLastToken() const;
+
+    const size_t &getCurIndex() const;
 
 protected:
 
@@ -46,17 +51,27 @@ private:
     Token lastToken;
     StateChangeTable sct;
     HandleFuncTable hft;
+
     void reset();
+
     void rewind();
 
     void handleEmpty();
+
     void handleKeywordIdentifier();
+
     void handleFloatConst();
+
     void handleIntConst();
+
     void handleCharConst();
+
     void handleStringConst();
+
     void handleDelimiter();
+
     void handleComment();
+
     void handleScientificNotationConstant();
 };
 

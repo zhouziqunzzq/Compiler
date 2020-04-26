@@ -3,10 +3,10 @@
 
 #include<string>
 #include "Table.h"
+
 using namespace std;
 
-class DelimiterTable : public Table<string>
-{
+class DelimiterTable : public Table<string> {
 public:
     DelimiterTable();
 };

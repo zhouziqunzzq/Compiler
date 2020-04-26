@@ -7,8 +7,7 @@
 #include "utils.h"
 #include <stack>
 
-class RDAnalyzer
-{
+class RDAnalyzer {
 private:
     Scanner *sc;
     QuadrupleTable *qt;
@@ -21,25 +20,42 @@ private:
     bool intflag = 0;
     bool floatflag = 0;
     Token lastIdentifier;
+
     bool PG();
+
     bool ST();
-    bool VS();
-    bool AS();
+
+//    bool VS();
+
+//    bool AS();
+
     bool VD();
+
     bool TP();
+
     bool IT();
+
     bool IFD();
+
     bool PD();
+
     bool IS();
-    bool GF();
+
+//    bool GF();
+
     void Ent();
+
     void Typ(Token tmp);
+
     bool ASSI();
+
     void INITFLAG();
 
 public:
     RDAnalyzer(Scanner *sc, QuadrupleTable *qt);
+
     bool analyze();
+
     string errorMsg;
 };
 

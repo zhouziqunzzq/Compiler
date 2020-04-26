@@ -13,18 +13,16 @@
 
 using namespace std;
 
-template <class Type>
-Type stringToNum(const string& str)
-{
+template<class Type>
+Type stringToNum(const string &str) {
     istringstream iss(str);
     Type num;
     iss >> num;
     return num;
 }
 
-template <class Type>
-string numToString(const Type& v)
-{
+template<class Type>
+string numToString(const Type &v) {
     stringstream ss;
     string s;
     ss << v;
@@ -33,8 +31,11 @@ string numToString(const Type& v)
 }
 
 int calcConstResult(Operation op, int a, int b);
+
 float calcConstResult(Operation op, float a, int b);
+
 float calcConstResult(Operation op, int a, float b);
+
 float calcConstResult(Operation op, float a, float b);
 
 #endif // UTILS_H_INCLUDED

@@ -3,16 +3,13 @@
 
 using namespace std;
 
-int TypeTable::entry(Tval tv, int tp)
-{
-    return entry((TypeTableRecord)
-    {
-        tv,tp
+int TypeTable::entry(Tval tv, int tp) {
+    return entry(TypeTableRecord{
+            tv, tp
     });
 }
 
-TypeTable::TypeTable()
-{
+TypeTable::TypeTable() {
     entry(INTEGER, -1);
     entry(FLOAT, -1);
     entry(CHAR, -1);

@@ -11,13 +11,12 @@
 #include "utils.h"
 #include "DAGOptimizer.h"
 #include "ASMGenerator.h"
+
 using namespace std;
 
-void testScanner(Scanner &sc)
-{
+void testScanner(Scanner &sc) {
     while (sc.getLastToken().type != ERROR &&
-            sc.getLastToken().type != END)
-    {
+           sc.getLastToken().type != END) {
         sc.next();
         if (sc.getLastToken().type != END)
             cout << sc.getLastToken().word << endl;
@@ -26,66 +25,58 @@ void testScanner(Scanner &sc)
     }
 }
 
-void testAnalyzer(Scanner &sc, RDAnalyzer &ra)
-{
+bool runAnalyzer(Scanner &sc, RDAnalyzer &ra) {
     bool flag = ra.analyze();
-    if (!flag)
-    {
+    if (!flag) {
         printf("ERROR: \tInvalid token \"%s\" found at position %d.\n",
-               sc.getLastToken().word.c_str(), sc.getCurIndex());
-        if (ra.errorMsg != "")
+               sc.getLastToken().word.c_str(), static_cast<int>(sc.getCurIndex()));
+        if (!ra.errorMsg.empty())
             printf("\t%s\n", ra.errorMsg.c_str());
-    }
-    else
+    } else
         printf("OK.\n");
+
+    return flag;
 }
 
-void printQT(const QuadrupleTable &qt)
-{
+void printQT(const QuadrupleTable &qt) {
     string ops;
-    for (auto it = qt.begin(); it != qt.end(); ++it)
-    {
-        switch(it->op)
-        {
-        case ADD:
-            ops = "ADD";
-            break;
-        case MINUS:
-            ops = "MINUS";
-            break;
-        case MUL:
-            ops = "MUL";
-            break;
-        case DIV:
-            ops = "DIV";
-            break;
-        case ASSIGN:
-            ops = "ASSIGN";
-            break;
-        case BLANK:
-            ops = "BLANK";
-            break;
+    for (const auto &it : qt) {
+        switch (it.op) {
+            case ADD:
+                ops = "ADD";
+                break;
+            case MINUS:
+                ops = "MINUS";
+                break;
+            case MUL:
+                ops = "MUL";
+                break;
+            case DIV:
+                ops = "DIV";
+                break;
+            case ASSIGN:
+                ops = "ASSIGN";
+                break;
+            case BLANK:
+                ops = "BLANK";
+                break;
         }
-        printf("(%s, %d(%d), %d(%d), %d(%d))\n", ops.c_str(), it->opr1, it->isActive1, it->opr2, it->isActive2, it->rst, it->isActiveR);
+        printf("(%s, %d(%d), %d(%d), %d(%d))\n", ops.c_str(), it.opr1, it.isActive1, it.opr2, it.isActive2, it.rst,
+               it.isActiveR);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     string filename;
-    if (argc != 2)
-    {
+    if (argc != 2) {
         cout << "Invalid filename" << endl;
         return 0;
-    }
-    else
-    {
+    } else {
         filename = argv[1];
     }
 
     ifstream in(filename, ios::in);
-    if (!in)
-    {
+    if (!in) {
         cout << "Failed to open file" << endl;
         return 0;
     }
@@ -95,13 +86,13 @@ int main(int argc, char *argv[])
     buffer += "\n";
 
     //string test = "int a, b, c; a = 1; b = 2; c = a + b;\n";
+    SymbolTable st;
     KeywordTable kt;
     DelimiterTable dt;
     CharConstTable cct;
     StrConstTable strct;
     IntConstTable ict;
     FloatConstTable fct;
-    SymbolTable st;
     Vall vall;
     TypeTable tt;
     Scanner sc(buffer, &kt, &dt, &cct, &strct, &ict, &fct, &st, &vall, &tt);
@@ -114,7 +105,9 @@ int main(int argc, char *argv[])
 
     cout << "\n\n\n";
     cout << "Starting Grammar Analyzer..." << endl;
-    testAnalyzer(sc, ra);
+    if (!runAnalyzer(sc, ra)) {
+        return 1;
+    }
 
     cout << "\n\n\n";
     cout << "Printing unoptimized Quadruples..." << endl;

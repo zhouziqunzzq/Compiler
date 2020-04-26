@@ -3,9 +3,8 @@
 
 using namespace std;
 
-KeywordTable::KeywordTable()
-{
+KeywordTable::KeywordTable() {
     entry("const");
-	entry("int");
-	entry("float");
+    entry("int");
+    entry("float");
 }

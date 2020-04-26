@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Quadruple.h"
+
 using namespace std;
 
 typedef vector<Quadruple> QuadrupleTable;

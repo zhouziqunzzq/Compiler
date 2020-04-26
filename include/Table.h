@@ -3,58 +3,58 @@
 
 #include<vector>
 #include<map>
+
 using namespace std;
 
 template<class T>
-class Table
-{
+class Table {
 protected:
     vector<T> table;
     map<T, int> index;
 
 public:
+    virtual ~Table() = default;
+
     int entry(T v);
-    const T& getValue(int id) const;
+
+    const T &getValue(int id) const;
+
     int getID(T v);
+
     bool has(T v);
+
     void print(string name);
 };
 
 template<class T>
-int Table<T>::entry(T v)
-{
+int Table<T>::entry(T v) {
     auto it = index.find(v);
-    if(it != index.end())
+    if (it != index.end())
         return it->second;
-    else
-    {
+    else {
         table.push_back(v);
-        index[v]=table.size()-1;
-        return table.size()-1;
+        index[v] = table.size() - 1;
+        return table.size() - 1;
     }
 }
 
 template<class T>
-const T& Table<T>::getValue(int id) const
-{
+const T &Table<T>::getValue(int id) const {
     return table[id];
 }
 
 template<class T>
-int Table<T>::getID(T v)
-{
+int Table<T>::getID(T v) {
     return index[v];
 }
 
 template<class T>
-bool Table<T>::has(T v)
-{
+bool Table<T>::has(T v) {
     return index.find(v) != index.end();
 }
 
-template <class T>
-void Table<T>::print(string name)
-{
+template<class T>
+void Table<T>::print(string name) {
     cout << "====================================" << endl;
     cout << "        " << name << "              " << endl;
     cout << "====================================" << endl;

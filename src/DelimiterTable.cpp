@@ -3,15 +3,14 @@
 
 using namespace std;
 
-DelimiterTable::DelimiterTable()
-{
+DelimiterTable::DelimiterTable() {
     entry("+");
     entry("-");
-	entry("*");
-	entry("/");
-	entry("(");
-	entry(")");
-	entry(",");
-	entry(";");
-	entry("=");
+    entry("*");
+    entry("/");
+    entry("(");
+    entry(")");
+    entry(",");
+    entry(";");
+    entry("=");
 }
